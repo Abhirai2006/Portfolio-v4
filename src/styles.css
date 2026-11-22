@@ -418,3 +418,60 @@ html.light {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
 }
+
+/* ---------- v5 chess ---------- */
+:root {
+  --piece-white: oklch(0.97 0.02 85);
+  --piece-black: oklch(0.18 0.03 275);
+}
+.chess-board {
+  border: 2.5px solid var(--line);
+  border-radius: 0.6rem;
+  box-shadow: 6px 6px 0 var(--panel-shadow);
+}
+.sq-last::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: color-mix(in oklab, var(--primary) 45%, transparent);
+}
+.sq-selected::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: color-mix(in oklab, var(--accent) 55%, transparent);
+}
+.sq-target::before {
+  content: "";
+  position: absolute;
+  width: 26%;
+  height: 26%;
+  border-radius: 9999px;
+  background: color-mix(in oklab, var(--ink) 45%, transparent);
+}
+.chess-board svg {
+  position: relative;
+  z-index: 1;
+}
+@keyframes piece-arrive {
+  0% {
+    transform: translate(calc(var(--dx, 0) * 116.3%), calc(var(--dy, 0) * 116.3%)) scale(1);
+  }
+  45% {
+    transform: translate(calc(var(--dx, 0) * 58%), calc(var(--dy, 0) * 58%)) scale(1.25) rotate(-8deg);
+  }
+  100% {
+    transform: none;
+  }
+}
+.piece-arrive {
+  animation: piece-arrive 0.75s cubic-bezier(0.3, 0.7, 0.2, 1) 0.35s both;
+}
+@keyframes sfx-pop {
+  0% { transform: scale(0.4) rotate(-12deg); opacity: 0; }
+  60% { transform: scale(1.15) rotate(4deg); opacity: 1; }
+  100% { transform: scale(1) rotate(-3deg); opacity: 1; }
+}
+.sfx-pop {
+  animation: sfx-pop 0.6s cubic-bezier(0.3, 0.7, 0.2, 1) both;
+}
