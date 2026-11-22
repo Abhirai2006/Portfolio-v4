@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AnimeRouteImport } from './routes/anime'
 import { Route as ResumeRouteImport } from './routes/resume'
 import { Route as ReviewsRouteImport } from './routes/reviews'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ThankYouRouteImport } from './routes/thank-you'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ProjectsSlugRouteImport } from './routes/projects.$slug'
@@ -36,6 +37,11 @@ const ResumeRoute = ResumeRouteImport.update({
 const ReviewsRoute = ReviewsRouteImport.update({
   id: '/reviews',
   path: '/reviews',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ThankYouRoute = ThankYouRouteImport.update({
@@ -64,6 +70,7 @@ export interface FileRoutesByFullPath {
   '/anime': typeof AnimeRoute
   '/resume': typeof ResumeRoute
   '/reviews': typeof ReviewsRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/thank-you': typeof ThankYouRoute
   '/api/chat': typeof ApiChatRoute
   '/projects/$slug': typeof ProjectsSlugRoute
@@ -74,6 +81,7 @@ export interface FileRoutesByTo {
   '/anime': typeof AnimeRoute
   '/resume': typeof ResumeRoute
   '/reviews': typeof ReviewsRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/thank-you': typeof ThankYouRoute
   '/api/chat': typeof ApiChatRoute
   '/projects/$slug': typeof ProjectsSlugRoute
@@ -85,6 +93,7 @@ export interface FileRoutesById {
   '/anime': typeof AnimeRoute
   '/resume': typeof ResumeRoute
   '/reviews': typeof ReviewsRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/thank-you': typeof ThankYouRoute
   '/api/chat': typeof ApiChatRoute
   '/projects/$slug': typeof ProjectsSlugRoute
@@ -97,6 +106,7 @@ export interface FileRouteTypes {
     | '/anime'
     | '/resume'
     | '/reviews'
+    | '/sitemap.xml'
     | '/thank-you'
     | '/api/chat'
     | '/projects/$slug'
@@ -107,6 +117,7 @@ export interface FileRouteTypes {
     | '/anime'
     | '/resume'
     | '/reviews'
+    | '/sitemap.xml'
     | '/thank-you'
     | '/api/chat'
     | '/projects/$slug'
@@ -117,6 +128,7 @@ export interface FileRouteTypes {
     | '/anime'
     | '/resume'
     | '/reviews'
+    | '/sitemap.xml'
     | '/thank-you'
     | '/api/chat'
     | '/projects/$slug'
@@ -128,6 +140,7 @@ export interface RootRouteChildren {
   AnimeRoute: typeof AnimeRoute
   ResumeRoute: typeof ResumeRoute
   ReviewsRoute: typeof ReviewsRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ThankYouRoute: typeof ThankYouRoute
   ApiChatRoute: typeof ApiChatRoute
   ProjectsSlugRoute: typeof ProjectsSlugRoute
@@ -162,6 +175,13 @@ declare module '@tanstack/react-router' {
       path: '/reviews'
       fullPath: '/reviews'
       preLoaderRoute: typeof ReviewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/thank-you': {
@@ -200,6 +220,7 @@ const rootRouteChildren: RootRouteChildren = {
   AnimeRoute: AnimeRoute,
   ResumeRoute: ResumeRoute,
   ReviewsRoute: ReviewsRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   ThankYouRoute: ThankYouRoute,
   ApiChatRoute: ApiChatRoute,
   ProjectsSlugRoute: ProjectsSlugRoute,
