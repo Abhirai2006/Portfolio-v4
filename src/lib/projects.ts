@@ -38,6 +38,7 @@ export type Project = {
   images?: Shot[];
   live?: string;
   repo?: string;
+  snippet?: { title: string; lines: string[] };
 };
 
 export type Kind = "ml" | "product" | "algo" | "practice";
