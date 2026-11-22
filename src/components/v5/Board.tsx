@@ -82,7 +82,7 @@ export function Board({ fen, orientation = "w", highlight = [], arrive, onMove, 
     <div
       role={interactive ? "group" : "img"}
       aria-label={label}
-      className={cn("chess-board grid aspect-square w-full grid-cols-8 overflow-hidden", className)}
+      className={cn("chess-board grid aspect-square w-full grid-cols-8 grid-rows-8 overflow-hidden", className)}
     >
       {cells.map((c, i) => {
         const piece = c.piece && (

@@ -93,7 +93,9 @@ export function SpeedLines({
     // Deterministic jitter so SSR and client render the same SVG.
     const inner = 34 + ((i * 37) % 11);
     const w = 0.35 + ((i * 53) % 7) / 10;
-    return { x1: 50 + Math.cos(a) * inner, y1: 50 + Math.sin(a) * inner, x2: 50 + Math.cos(a) * 75, y2: 50 + Math.sin(a) * 75, w };
+    // Rounded so server and browser trig agree exactly (hydration).
+    const r = (v: number) => Math.round(v * 100) / 100;
+    return { x1: r(50 + Math.cos(a) * inner), y1: r(50 + Math.sin(a) * inner), x2: r(50 + Math.cos(a) * 75), y2: r(50 + Math.sin(a) * 75), w };
   });
   return (
     <svg
@@ -103,7 +105,7 @@ export function SpeedLines({
       className={cn("pointer-events-none absolute inset-0 h-full w-full opacity-25", className)}
     >
       {lines.map((l, i) => (
-        <line key={i} {...l} stroke={color} strokeWidth={l.w} strokeLinecap="round" />
+        <line key={i} x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2} stroke={color} strokeWidth={l.w} strokeLinecap="round" />
       ))}
     </svg>
   );

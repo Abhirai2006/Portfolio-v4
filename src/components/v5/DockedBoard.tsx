@@ -68,14 +68,15 @@ export function DockedBoard({
 
   return (
     <>
-      <div className="fixed bottom-4 right-4 z-40 hidden xl:block">{card}</div>
-      <div className="fixed bottom-3 right-3 z-40 xl:hidden">
+      {/* Full card only where there is room beside the 6xl content column; a pill everywhere else. */}
+      <div className="fixed bottom-4 left-4 z-40 hidden 2xl:block">{card}</div>
+      <div className="fixed bottom-3 left-3 z-40 2xl:hidden">
         {open && <div className="mb-2">{card}</div>}
         <button
           type="button"
           aria-expanded={open}
           onClick={() => setOpen((o) => !o)}
-          className="ml-auto flex items-center gap-2 rounded-full border-2 border-line bg-paper px-3 py-1.5 text-xs font-semibold shadow-[4px_4px_0_var(--panel-shadow)]"
+          className="flex items-center gap-2 rounded-full border-2 border-line bg-paper px-3 py-1.5 text-xs font-semibold shadow-[4px_4px_0_var(--panel-shadow)]"
         >
           <span aria-hidden="true">♞</span>
           <span className="font-mono">{lastMoveText}</span>

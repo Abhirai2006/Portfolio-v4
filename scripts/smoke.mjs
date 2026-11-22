@@ -52,6 +52,44 @@ for (const route of routes) {
       for (const s of [...(route.mustContain ?? []), ...(route.mustContainJsOnly ?? [])]) {
         if (!text.includes(s)) fail(`${tag}: missing "${s}"`);
       }
+      if (route.a11yChecks && theme === "dark") {
+        // The chess must never lock the page: scrolling works at once, and Tab reaches the skip link fast.
+        await page.evaluate(() => window.scrollTo(0, 0));
+        await page.mouse.wheel(0, 1200);
+        await page.waitForTimeout(400);
+        if ((await page.evaluate(() => window.scrollY)) < 200) fail(`${tag}: page did not scroll right after load`);
+        await page.evaluate(() => window.scrollTo(0, 0));
+        await page.evaluate(() => document.activeElement && document.activeElement.blur && document.activeElement.blur());
+        let reached = false;
+        for (let i = 0; i < 5 && !reached; i++) {
+          await page.keyboard.press("Tab");
+          reached = await page.evaluate(() => (document.activeElement?.textContent ?? "").includes("Skip to the work"));
+        }
+        if (!reached) fail(`${tag}: Tab did not reach "Skip to the work" within 5 presses`);
+      }
+      if (route.labCheck && theme === "dark") {
+        // The Churn Lab loads when scrolled near: scroll there, then the real model must answer.
+        await page.evaluate(() => document.getElementById("lab")?.scrollIntoView());
+        await page.waitForTimeout(3000);
+        const lab = await page.evaluate(() => document.getElementById("lab")?.innerText ?? "");
+        if (!lab.includes("Score a customer")) fail(`${tag}: Churn Lab tabs missing`);
+        if (!/\d+%/.test(lab)) fail(`${tag}: Churn Lab shows no probability`);
+      }
+      if (route.chessCheck && theme === "dark" && width === 1280) {
+        // A reply plays on the board and takes you to its chapter; the finale solves by clicking c3 then g3.
+        await page.evaluate(() => window.scrollTo(0, 0));
+        await page.getByRole("button", { name: /Nf6/ }).first().click();
+        await page.waitForTimeout(2200);
+        const near = await page.evaluate(() => Math.abs(document.getElementById("origin").getBoundingClientRect().top) < 200);
+        if (!near) fail(`${tag}: reply 1…Nf6 did not take the visitor to Origin`);
+        await page.evaluate(() => document.getElementById("finale").scrollIntoView());
+        await page.waitForTimeout(600);
+        await page.getByRole("button", { name: "c3, black queen" }).click();
+        await page.getByRole("button", { name: "g3" }).click();
+        await page.waitForTimeout(500);
+        const fin = await page.evaluate(() => document.getElementById("finale").innerText);
+        if (!fin.includes("Qg3!!")) fail(`${tag}: playing c3→g3 did not solve the finale`);
+      }
       for (const e of errors) fail(`${tag}: ${e}`);
       if (shots) {
         const name = route.path.replace(/\W+/g, "_").replace(/^_|_$/g, "") || "home";

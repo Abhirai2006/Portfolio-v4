@@ -238,7 +238,8 @@ function ScoreTab({ data }: { data: Data }) {
           </div>
         </details>
       </div>
-      <div className="space-y-6">
+      {/* On phones the result comes first, so changing a control visibly changes it. */}
+      <div className="order-first space-y-6 lg:order-none">
         <RiskMeter p={p} threshold={model.threshold} />
         <Reasons model={model} customer={customer} />
       </div>

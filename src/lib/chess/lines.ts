@@ -24,7 +24,7 @@ export const CHAPTER_TITLES: Record<ChapterId, string> = {
   activity: "Live Activity",
   ask: "Ask Abhishek",
   sidequest: "Side Quest",
-  finale: "Breslau, 1912",
+  finale: "The Finale",
 };
 
 export type Reply = "d5" | "Nf6" | "c5" | "g6";

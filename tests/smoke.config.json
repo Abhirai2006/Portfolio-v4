@@ -2,9 +2,26 @@
   "routes": [
     {
       "path": "/",
+      "a11yChecks": true,
+      "settleMs": 2500,
       "mustContain": [
-        "Abhishek Rai A"
-      ]
+        "Abhishek Rai A",
+        "looking for ML internships",
+        "Customer Churn Intelligence System",
+        "MUSE Students Voice",
+        "Arthra",
+        "Ro-Bio",
+        "Earth &amp; Ethos",
+        "Churn Lab",
+        "not proven causes",
+        "Abhishek opens 1.Nf3",
+        "Skip to the work",
+        "Breslau, 1912",
+        "https://github.com/Abhirai2006",
+        "https://www.linkedin.com/in/abhishek-rai-a-00067238b/"
+      ],
+      "labCheck": true,
+      "chessCheck": true
     },
     {
       "path": "/resume",

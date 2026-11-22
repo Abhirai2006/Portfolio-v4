@@ -62,7 +62,7 @@ export function Finale({ onSolved }: { onSolved: () => void }) {
         </div>
         <div>
           <p className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">Flashback</p>
-          <h2 className="mt-2 font-display text-3xl font-extrabold sm:text-4xl">Breslau, 1912</h2>
+          <h3 className="mt-2 font-display text-3xl font-extrabold sm:text-4xl">Breslau, 1912</h3>
           <p className="mt-3 text-muted-foreground">
             Levitsky against Marshall, Abhishek's favourite game. Legend says the crowd showered the board with gold
             coins after Marshall's last move. Play black and find it.
