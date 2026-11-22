@@ -370,6 +370,16 @@ function Scene({
   useEnvironment();
   const [selected, setSelected] = useState<string | null>(null);
   const [hovered, setHovered] = useState<string | null>(null);
+  // Render on demand: keep drawing only for a short while after something changes (moves, lights, hover).
+  const invalidate = useThree((st) => st.invalidate);
+  const busyUntil = useRef(0);
+  useEffect(() => {
+    busyUntil.current = performance.now() + 2200;
+    invalidate();
+  }, [fen, last, dramatic, selected, hovered, invalidate]);
+  useFrame(() => {
+    if (performance.now() < busyUntil.current) invalidate();
+  });
   const game = useMemo(() => new Chess(fen), [fen]);
   const turn = game.turn();
   const materials = useMemo(
@@ -474,9 +484,9 @@ export default function Board3D(props: {
   return (
     <div ref={wrap} className="h-full w-full" style={{ touchAction: "pan-y" }}>
       <Canvas
-        shadows
-        dpr={[1, 1.75]}
-        frameloop={visible ? "always" : "never"}
+        shadows={finePointer}
+        dpr={finePointer ? [1, 1.75] : [1, 1.25]}
+        frameloop={visible ? "demand" : "never"}
         camera={{ position: [0, 11, 9.6], fov: 40 }}
         gl={{ antialias: true }}
         onCreated={({ gl }) => {
@@ -484,15 +494,17 @@ export default function Board3D(props: {
         }}
       >
         <Scene {...props} />
-        <OrbitControls
-          enableZoom={false}
-          enablePan={false}
-          enableRotate={finePointer}
-          minPolarAngle={0.45}
-          maxPolarAngle={1.15}
-          minAzimuthAngle={-0.7}
-          maxAzimuthAngle={0.7}
-        />
+        {/* Only on mouse/trackpad: OrbitControls sets touch-action:none, which would stop phones scrolling the page. */}
+        {finePointer && (
+          <OrbitControls
+            enableZoom={false}
+            enablePan={false}
+            minPolarAngle={0.45}
+            maxPolarAngle={1.15}
+            minAzimuthAngle={-0.7}
+            maxAzimuthAngle={0.7}
+          />
+        )}
       </Canvas>
     </div>
   );

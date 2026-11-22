@@ -24,10 +24,12 @@
         "Algorithms",
         "Skills + Résumé",
         "About Abhishek",
-        "Contact / Hire"
+        "Contact / Hire",
+        "match the Python model"
       ],
       "labCheck": true,
-      "chessCheck": true
+      "chessCheck": true,
+      "reviewChecks": true
     },
     {
       "path": "/resume",

@@ -125,6 +125,21 @@ for (const route of routes) {
         const fin = await page.evaluate(() => document.getElementById("finale").innerText);
         if (!fin.includes("Qg3!!")) fail(`${tag}: playing c3→g3 did not solve the finale`);
       }
+      if (route.reviewChecks && theme === "dark" && width === 1280) {
+        // Keyboard: following a legend link moves focus into the destination chapter.
+        await page.evaluate(() => window.scrollTo(0, 0));
+        const knightLink = page.locator("#board aside a").first();
+        await knightLink.focus();
+        await page.keyboard.press("Enter");
+        await page.waitForTimeout(1500);
+        const focusIn = await page.evaluate(() => document.activeElement?.closest("section")?.id ?? document.activeElement?.tagName);
+        if (focusIn !== "lab") fail(`${tag}: keyboard focus did not move to the Churn Lab after the legend link (was ${focusIn})`);
+        // Threshold label shows enough precision that 0.4848 and 0.48 never look the same.
+        await page.getByRole("tab", { name: "Pick the threshold" }).click();
+        await page.waitForTimeout(400);
+        const thr = await page.evaluate(() => document.getElementById("lab").innerText);
+        if (!thr.includes("0.485")) fail(`${tag}: threshold label should read 0.485 at Abhishek's threshold`);
+      }
       for (const e of errors) fail(`${tag}: ${e}`);
       if (shots) {
         const name = route.path.replace(/\W+/g, "_").replace(/^_|_$/g, "") || "home";
@@ -142,6 +157,37 @@ for (const route of routes) {
     const pages = (pdf.toString("latin1").match(/\/Type\s*\/Page[^s]/g) || []).length;
     if (pages > route.pdfMaxPages) fail(`${route.path}: prints on ${pages} A4 pages (max ${route.pdfMaxPages})`);
     await ctx.close();
+  }
+  if (route.reviewChecks) {
+    // Phone with a touchscreen: a swipe that starts on the 3D board must scroll the page.
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+    const page = await ctx.newPage();
+    await page.goto(base + route.path, { waitUntil: "domcontentloaded" });
+    await page.waitForSelector("#board canvas", { timeout: 10000 }).catch(() => {});
+    await page.waitForTimeout(800);
+    const touchAction = await page.evaluate(() => {
+      let el = document.querySelector("#board canvas");
+      const seen = [];
+      while (el) {
+        seen.push(getComputedStyle(el).touchAction);
+        el = el.parentElement;
+      }
+      return seen;
+    });
+    if (touchAction.includes("none")) fail(`${route.path} [touch 390px]: an element around the 3D board sets touch-action: none (page can't be swiped)`);
+    await ctx.close();
+    // Reduced motion: no full-screen blackout when a piece moves.
+    const rctx = await browser.newContext({ viewport: { width: 1280, height: 900 }, reducedMotion: "reduce" });
+    const rp = await rctx.newPage();
+    await rp.goto(base + route.path, { waitUntil: "domcontentloaded" });
+    await rp.waitForTimeout(1500);
+    const main = rp.locator("#board");
+    await main.getByRole("button", { name: "g8, black knight" }).click();
+    await main.getByRole("button", { name: "f6", exact: true }).click();
+    await rp.waitForTimeout(600);
+    const op = await rp.evaluate(() => Number(getComputedStyle(document.querySelector("#board > div[aria-hidden]")).opacity));
+    if (op > 0.1) fail(`${route.path} [reduced motion]: the page still blacks out when a piece moves`);
+    await rctx.close();
   }
   // No-JS pass: server-rendered HTML alone.
   const ctx = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 900 } });

@@ -475,3 +475,13 @@ html.light {
 .sfx-pop {
   animation: sfx-pop 0.6s cubic-bezier(0.3, 0.7, 0.2, 1) both;
 }
+
+/* "Likely to stay" in the Churn Lab: blue that holds 3:1 contrast on panels in both themes. */
+:root {
+  --stay: var(--wash-activity);
+  --stay-fg: var(--ink);
+}
+html.light {
+  --stay: var(--primary);
+  --stay-fg: var(--primary-foreground);
+}

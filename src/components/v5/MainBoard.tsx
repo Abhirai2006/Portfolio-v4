@@ -2,7 +2,7 @@ import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react"
 import { Chess, type Square } from "chess.js";
 import { Board } from "./Board";
 import { ChessPiece, type PieceType } from "@/components/art/ChessPiece";
-import { DESTINATIONS, START_FEN, applyVisitorMove, whiteReply } from "@/lib/chess/play";
+import { DESTINATIONS, START_FEN, applyVisitorMove, parseSaved, whiteReply } from "@/lib/chess/play";
 import type { Kind } from "@/lib/projects";
 import { track } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
@@ -29,15 +29,15 @@ function useBoardGame(onTravel: (d: Destination) => void) {
 
   useEffect(() => {
     try {
-      const raw = sessionStorage.getItem(STORE);
-      if (raw) {
-        const s = JSON.parse(raw) as Saved;
-        new Chess(s.fen); // throws if corrupted
-        setState(s);
+      const saved = parseSaved(sessionStorage.getItem(STORE));
+      if (saved) {
+        setState(saved);
         setMsg("Welcome back. Your game is where you left it.");
+      } else {
+        sessionStorage.removeItem(STORE); // drop anything malformed or from an older version
       }
     } catch {
-      /* fresh game */
+      /* storage unavailable: fresh game */
     }
     return () => timers.current.forEach((t) => window.clearTimeout(t));
   }, []);
@@ -61,7 +61,8 @@ function useBoardGame(onTravel: (d: Destination) => void) {
       }
       const dest = DESTINATIONS[r.piece];
       setBusy(true);
-      setDramatic(true);
+      // Lights out, unless the visitor asked for reduced motion (a sudden blackout is what they opted out of).
+      if (!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) setDramatic(true);
       const afterVisitor = { fen: r.fen, last: [r.from, r.to], moves: [...state.moves, r.san] };
       save(afterVisitor);
       setMsg(
@@ -96,6 +97,14 @@ function useBoardGame(onTravel: (d: Destination) => void) {
     },
     [busy, state, onTravel],
   );
+
+  // Esc brings the lights back early.
+  useEffect(() => {
+    if (!dramatic) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setDramatic(false);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [dramatic]);
 
   const reset = () => {
     save({ fen: START_FEN, last: ["g1", "f3"], moves: ["Nf3"] });
@@ -149,7 +158,7 @@ export function MainBoard({ onTravel }: { onTravel: (d: Destination) => void }) 
   const canPlay = !game.busy && !game.over;
 
   return (
-    <div id="board" className="scroll-mt-24">
+    <div id="board" tabIndex={-1} className="scroll-mt-24 focus:outline-none">
       {/* Lights out: the whole page goes dark while a piece moves; only the board stays lit. */}
       <div
         aria-hidden="true"
@@ -216,7 +225,8 @@ function Flat({ game, canPlay }: { game: ReturnType<typeof useBoardGame>; canPla
         fen={game.fen}
         orientation="b"
         highlight={game.last}
-        onMove={canPlay ? game.move : undefined}
+        onMove={game.move}
+        disabled={!canPlay}
         label="Main board: you play black. The piece you move decides where the site takes you."
         className="max-w-full"
       />

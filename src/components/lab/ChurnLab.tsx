@@ -86,7 +86,7 @@ function RiskMeter({ p, threshold }: { p: number; threshold: number }) {
         <span
           className={cn(
             "rounded-full border-2 border-line px-3 py-1 font-mono text-xs font-bold uppercase tracking-widest",
-            atRisk ? "bg-destructive text-destructive-foreground" : "bg-wash-activity text-ink",
+            atRisk ? "bg-destructive text-destructive-foreground" : "bg-[var(--stay)] text-[var(--stay-fg)]",
           )}
         >
           {atRisk ? "At risk" : "Likely to stay"}
@@ -94,7 +94,7 @@ function RiskMeter({ p, threshold }: { p: number; threshold: number }) {
       </div>
       <div className="relative mt-3 h-3 rounded-full border-2 border-line bg-muted">
         <div
-          className={cn("h-full rounded-full", atRisk ? "bg-destructive" : "bg-wash-activity")}
+          className={cn("h-full rounded-full", atRisk ? "bg-destructive" : "bg-[var(--stay)]")}
           style={{ width: pct(p, 2) }}
         />
         <div
@@ -104,7 +104,7 @@ function RiskMeter({ p, threshold }: { p: number; threshold: number }) {
         />
       </div>
       <p className="mt-1 font-mono text-[11px] text-muted-foreground">
-        churn probability · the line is Abhishek's alert threshold ({threshold.toFixed(2)})
+        churn probability · the line is Abhishek's alert threshold ({threshold.toFixed(3)})
       </p>
     </div>
   );
@@ -132,7 +132,7 @@ function Reasons({ model, customer }: { model: ModelJson; customer: Customer }) 
               <span
                 className={cn(
                   "h-2.5 rounded-full",
-                  value > 0 ? "bg-destructive" : "bg-wash-activity",
+                  value > 0 ? "bg-destructive" : "bg-[var(--stay)]",
                 )}
                 style={{ width: `${(Math.abs(value) / max) * 100}%`, minWidth: 4 }}
               />
@@ -311,7 +311,7 @@ function SaveTab({ data }: { data: Data }) {
                   onClick={() => setState((s) => play(s, m.id))}
                   className={cn(
                     "flex w-full items-center justify-between gap-3 rounded-xl border-2 border-line px-4 py-3 text-left text-sm transition",
-                    done ? "bg-wash-activity text-ink" : "bg-background hover:-translate-y-0.5",
+                    done ? "bg-[var(--stay)] text-[var(--stay-fg)]" : "bg-background hover:-translate-y-0.5",
                     disabled && !done && "opacity-40",
                   )}
                 >
@@ -359,7 +359,7 @@ function ThresholdTab({ data }: { data: Data }) {
   const [t, setT] = useState(model.threshold);
   const m = useMemo(() => metricsAt(scored, t), [scored, t]);
   const cells = [
-    { k: "Caught churners", v: m.tp, cls: "bg-wash-activity text-ink" },
+    { k: "Caught churners", v: m.tp, cls: "bg-[var(--stay)] text-[var(--stay-fg)]" },
     { k: "False alarms", v: m.fp, cls: "bg-wash-origin text-ink" },
     { k: "Missed churners", v: m.fn, cls: "bg-destructive text-destructive-foreground" },
     { k: "Correctly left alone", v: m.tn, cls: "bg-muted" },
@@ -371,7 +371,7 @@ function ThresholdTab({ data }: { data: Data }) {
           className="block font-mono text-xs uppercase tracking-widest text-muted-foreground"
           htmlFor="thr"
         >
-          Alert threshold: {t.toFixed(2)}
+          Alert threshold: {t.toFixed(3)}
         </label>
         <input
           id="thr"
@@ -388,7 +388,7 @@ function ThresholdTab({ data }: { data: Data }) {
           onClick={() => setT(model.threshold)}
           className="mt-1 font-mono text-xs text-primary underline-offset-4 hover:underline"
         >
-          Reset to Abhishek's choice ({model.threshold.toFixed(2)}, picked from the precision-recall
+          Reset to Abhishek's choice ({model.threshold.toFixed(3)}, picked from the precision-recall
           curve)
         </button>
       </div>
@@ -473,13 +473,7 @@ export function ChurnLab() {
           <ThresholdTab data={data} />
         )}
       </div>
-      <p className="mt-6 border-t-2 border-dashed border-border pt-4 text-xs text-muted-foreground">
-        <b className="text-foreground">How this runs:</b> Abhishek's real LightGBM model (150 trees)
-        exported to JSON and evaluated in TypeScript in your browser, with SHAP explanations
-        computed the same way LightGBM does. Its predictions match the Python model within 0.000001
-        on all 1,409 held-out customers. Test ROC-AUC 0.847 (cross-validated 0.849). Data: IBM's
-        public Telco Customer Churn dataset.
-      </p>
+
     </Panel>
   );
 }

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { Chess } from "chess.js";
-import { DESTINATIONS, START_FEN, applyVisitorMove, whiteReply } from "@/lib/chess/play";
+import { DESTINATIONS, START_FEN, applyVisitorMove, parseSaved, whiteReply } from "@/lib/chess/play";
 
 describe("the piece decides the destination", () => {
   test("exactly the six agreed destinations", () => {
@@ -69,5 +69,23 @@ describe("game", () => {
   test("no reply when the game is over", () => {
     const mated = "rnb1kbnr/pppp1ppp/8/4p3/6Pq/5P2/PPPPP2P/RNBQKBNR w KQkq - 1 3";
     expect(whiteReply(mated)).toBeNull();
+  });
+});
+
+describe("restoring a saved game", () => {
+  const good = { fen: START_FEN, last: ["g1", "f3"], moves: ["Nf3"] };
+  test("a valid saved game is restored", () => {
+    expect(parseSaved(JSON.stringify(good))).toEqual(good);
+  });
+  test.each([
+    ["empty object", "{}"],
+    ["fen only", JSON.stringify({ fen: START_FEN })],
+    ["moves not strings", JSON.stringify({ ...good, moves: [1, 2] })],
+    ["last not two squares", JSON.stringify({ ...good, last: ["g1"] })],
+    ["bad fen", JSON.stringify({ ...good, fen: "nonsense" })],
+    ["not JSON", "{{{"],
+    ["null", "null"],
+  ])("%s is rejected", (_, raw) => {
+    expect(parseSaved(raw)).toBeNull();
   });
 });

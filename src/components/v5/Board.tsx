@@ -37,6 +37,8 @@ export type BoardProps = {
   arrive?: { sq: string; dx: number; dy: number };
   /** When set, the side to move can play by clicking or with the keyboard. */
   onMove?: (from: Square, to: Square) => void;
+  /** Interactive board that is temporarily not accepting moves (keeps focus on the same button). */
+  disabled?: boolean;
   label: string;
   className?: string;
 };
@@ -51,6 +53,7 @@ export function Board({
   highlight = [],
   arrive,
   onMove,
+  disabled = false,
   label,
   className,
 }: BoardProps) {
@@ -67,7 +70,7 @@ export function Board({
   }, [fen, selected]);
 
   const press = (c: Cell) => {
-    if (!onMove) return;
+    if (!onMove || disabled) return;
     const own = c.piece?.color === turn;
     if (selected && !own) {
       onMove(selected, c.sq); // the caller decides whether it was legal / right
@@ -131,6 +134,7 @@ export function Board({
             tabIndex={i === focus ? 0 : -1}
             aria-label={name(c)}
             aria-pressed={selected === c.sq}
+            aria-disabled={disabled || undefined}
             onClick={() => press(c)}
             onKeyDown={(e) => onKey(e, i)}
             onFocus={() => setFocus(i)}

@@ -72,3 +72,24 @@ export function whiteReply(fen: string): string | null {
   }
   return best ? best.san : null;
 }
+
+export type SavedGame = { fen: string; last: string[]; moves: string[] };
+
+const SQUARE = /^[a-h][1-8]$/;
+
+/** Read a saved game from sessionStorage text; anything malformed or from an older shape returns null. */
+export function parseSaved(raw: string | null): SavedGame | null {
+  if (!raw) return null;
+  try {
+    const s = JSON.parse(raw) as Partial<SavedGame> | null;
+    if (!s || typeof s.fen !== "string") return null;
+    if (!Array.isArray(s.moves) || !s.moves.every((m) => typeof m === "string")) return null;
+    if (!Array.isArray(s.last) || s.last.length !== 2 || !s.last.every((q) => typeof q === "string" && SQUARE.test(q))) {
+      return null;
+    }
+    new Chess(s.fen); // throws on an invalid position
+    return { fen: s.fen, last: s.last, moves: s.moves };
+  } catch {
+    return null;
+  }
+}

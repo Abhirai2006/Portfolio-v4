@@ -59,6 +59,8 @@ function scrollToId(id: string) {
   if (!el) return;
   const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
   el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+  // Move keyboard focus with the visitor, so the next Tab continues from the destination.
+  el.focus({ preventScroll: true });
 }
 
 function Index() {
@@ -201,7 +203,7 @@ function Contact({ solved }: { solved: boolean }) {
   const [revealed, setRevealed] = useState(false);
   const [copied, setCopied] = useState(false);
   return (
-    <section id="contact" aria-labelledby="contact-title" className="mt-10 scroll-mt-24">
+    <section id="contact" tabIndex={-1} aria-labelledby="contact-title" className="mt-10 scroll-mt-24 focus:outline-none">
       <Panel chapter="finale" tone="wash" className="relative p-6 sm:p-10">
         {solved && <SpeedLines className="opacity-20" />}
         <div className="relative grid gap-8 md:grid-cols-[1.2fr_1fr] md:items-center">

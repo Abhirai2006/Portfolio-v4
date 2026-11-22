@@ -29,8 +29,9 @@ export function Chapter({
   return (
     <section
       id={id}
+      tabIndex={-1}
       aria-labelledby={`${id}-title`}
-      className={cn("relative scroll-mt-24 py-16 sm:py-24", className)}
+      className={cn("relative scroll-mt-24 py-16 focus:outline-none sm:py-24", className)}
       style={{
         background: `linear-gradient(180deg, color-mix(in oklab, var(--wash-${id}) 12%, transparent) 0%, transparent 38%)`,
       }}
@@ -230,6 +231,13 @@ export function LabChapter() {
         your browser: score a customer and see why, try to save one with retention offers, or move
         the alert threshold and watch the trade-off. Predictions, not proven causes.
       </p>
+      <p className="mt-4 max-w-3xl text-sm text-muted-foreground">
+        <b className="text-foreground">How this runs:</b> Abhishek's real LightGBM model (150 trees) is exported to JSON
+        and evaluated in TypeScript in your browser, with SHAP explanations computed the same way LightGBM does. Its
+        predictions match the Python model within 0.000001 on all 1,409 held-out customers. Test ROC-AUC 0.847
+        (cross-validated 0.849); at his alert threshold it catches 82% of churners. Data: IBM's public Telco Customer
+        Churn dataset.
+      </p>
       <div className="mt-6">
         {near ? (
           <Suspense fallback={<LabPlaceholder />}>
@@ -248,6 +256,9 @@ function LabPlaceholder() {
     <Panel chapter="lab" tone="wash" className="flex min-h-64 items-center justify-center p-6">
       <Screentone />
       <p className="relative font-mono text-sm text-muted-foreground">loading the Churn Lab…</p>
+      <noscript>
+        <p className="relative mt-2 text-sm">The live model needs JavaScript; the numbers above are from the same model.</p>
+      </noscript>
     </Panel>
   );
 }
