@@ -3,7 +3,11 @@ import testSet from "@/data/churn/test-set.json";
 import { metricsAt, rocAuc } from "@/lib/churn/metrics";
 import { testRows } from "@/lib/churn/data";
 
-const rows = testRows(testSet as never).map((r) => ({ y: r.y, p: r.p, monthly: r.x.MonthlyCharges }));
+const rows = testRows(testSet as never).map((r) => ({
+  y: r.y,
+  p: r.p,
+  monthly: r.x.MonthlyCharges,
+}));
 const THRESHOLD = 0.48477971204830717;
 
 test("at the published threshold: 579 flagged, recall 0.8182, precision 0.5285", () => {

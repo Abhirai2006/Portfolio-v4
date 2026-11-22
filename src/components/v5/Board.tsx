@@ -1,6 +1,11 @@
 import { useMemo, useRef, useState, type CSSProperties, type KeyboardEvent } from "react";
 import { Chess, type Square } from "chess.js";
-import { ChessPiece, PIECE_NAMES, type PieceColor, type PieceType } from "@/components/art/ChessPiece";
+import {
+  ChessPiece,
+  PIECE_NAMES,
+  type PieceColor,
+  type PieceType,
+} from "@/components/art/ChessPiece";
 import { cn } from "@/lib/utils";
 
 const FILES = ["a", "b", "c", "d", "e", "f", "g", "h"];
@@ -40,7 +45,15 @@ export type BoardProps = {
  * Chess board drawn in the site's ink style. Non-interactive boards are a labelled picture;
  * interactive boards are a grid of buttons (arrow keys move, Enter or Space picks up and drops).
  */
-export function Board({ fen, orientation = "w", highlight = [], arrive, onMove, label, className }: BoardProps) {
+export function Board({
+  fen,
+  orientation = "w",
+  highlight = [],
+  arrive,
+  onMove,
+  label,
+  className,
+}: BoardProps) {
   const cells = useMemo(() => cellsFor(fen, orientation), [fen, orientation]);
   const turn = useMemo(() => new Chess(fen).turn(), [fen]);
   const [selected, setSelected] = useState<Square | null>(null);
@@ -67,7 +80,9 @@ export function Board({ fen, orientation = "w", highlight = [], arrive, onMove, 
   };
 
   const onKey = (e: KeyboardEvent, i: number) => {
-    const delta = ({ ArrowRight: 1, ArrowLeft: -1, ArrowDown: 8, ArrowUp: -8 } as Record<string, number>)[e.key];
+    const delta = (
+      { ArrowRight: 1, ArrowLeft: -1, ArrowDown: 8, ArrowUp: -8 } as Record<string, number>
+    )[e.key];
     if (delta === undefined) return;
     e.preventDefault();
     const next = Math.min(63, Math.max(0, i + delta));
@@ -82,7 +97,10 @@ export function Board({ fen, orientation = "w", highlight = [], arrive, onMove, 
     <div
       role={interactive ? "group" : "img"}
       aria-label={label}
-      className={cn("chess-board grid aspect-square w-full grid-cols-8 grid-rows-8 overflow-hidden", className)}
+      className={cn(
+        "chess-board grid aspect-square w-full grid-cols-8 grid-rows-8 overflow-hidden",
+        className,
+      )}
     >
       {cells.map((c, i) => {
         const piece = c.piece && (
@@ -100,7 +118,9 @@ export function Board({ fen, orientation = "w", highlight = [], arrive, onMove, 
           targets.has(c.sq) && "sq-target",
         );
         const style =
-          arrive?.sq === c.sq ? ({ "--dx": String(arrive.dx), "--dy": String(arrive.dy) } as CSSProperties) : undefined;
+          arrive?.sq === c.sq
+            ? ({ "--dx": String(arrive.dx), "--dy": String(arrive.dy) } as CSSProperties)
+            : undefined;
         return interactive ? (
           <button
             key={c.sq}
@@ -114,7 +134,10 @@ export function Board({ fen, orientation = "w", highlight = [], arrive, onMove, 
             onClick={() => press(c)}
             onKeyDown={(e) => onKey(e, i)}
             onFocus={() => setFocus(i)}
-            className={cn(cls, "focus-visible:z-10 focus-visible:outline-3 focus-visible:outline-[var(--primary)]")}
+            className={cn(
+              cls,
+              "focus-visible:z-10 focus-visible:outline-3 focus-visible:outline-[var(--primary)]",
+            )}
             style={style}
           >
             {piece}

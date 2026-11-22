@@ -26,14 +26,19 @@ describe("parity with Python (LightGBM + scikit-learn 1.8.0)", () => {
   test("TreeSHAP per column matches LightGBM pred_contrib, and base + parts = raw", () => {
     const colOf = (i: number) => {
       const name = model.featureNames[i];
-      return name.replace(/^num__/, "").replace(/^cat__/, "").split("_")[0];
+      return name
+        .replace(/^num__/, "")
+        .replace(/^cat__/, "")
+        .split("_")[0];
     };
     for (const r of parity.rows) {
       const x = r.x as Customer;
       const { base, parts } = explain(model, x);
       expect(Math.abs(base - r.contrib[45])).toBeLessThan(1e-6);
       const expected = new Map<string, number>();
-      r.contrib.slice(0, 45).forEach((v, i) => expected.set(colOf(i), (expected.get(colOf(i)) ?? 0) + v));
+      r.contrib
+        .slice(0, 45)
+        .forEach((v, i) => expected.set(colOf(i), (expected.get(colOf(i)) ?? 0) + v));
       for (const { column, value } of parts) {
         expect(Math.abs(value - (expected.get(column) ?? 0))).toBeLessThan(1e-6);
       }
@@ -51,16 +56,21 @@ describe("normalizeCustomer", () => {
   const base = rows[0].x;
 
   test("no internet service forces the six add-ons", () => {
-    const c = normalizeCustomer({ ...base, InternetService: "No", TechSupport: "Yes", StreamingTV: "Yes" });
+    const c = normalizeCustomer({
+      ...base,
+      InternetService: "No",
+      TechSupport: "Yes",
+      StreamingTV: "Yes",
+    });
     expect(c.TechSupport).toBe("No internet service");
     expect(c.StreamingTV).toBe("No internet service");
     expect(c.OnlineSecurity).toBe("No internet service");
   });
 
   test("no phone service forces MultipleLines", () => {
-    expect(normalizeCustomer({ ...base, PhoneService: "No", MultipleLines: "Yes" }).MultipleLines).toBe(
-      "No phone service",
-    );
+    expect(
+      normalizeCustomer({ ...base, PhoneService: "No", MultipleLines: "Yes" }).MultipleLines,
+    ).toBe("No phone service");
   });
 
   test("brand-new customer with zero charges scores to a finite probability", () => {

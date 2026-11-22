@@ -121,13 +121,19 @@ function Reasons({ model, customer }: { model: ModelJson; customer: Customer }) 
       </h4>
       <ul className="mt-2 space-y-2">
         {top.map(({ column, value }) => (
-          <li key={column} className="grid grid-cols-[minmax(0,9rem)_1fr] items-center gap-2 text-sm">
+          <li
+            key={column}
+            className="grid grid-cols-[minmax(0,9rem)_1fr] items-center gap-2 text-sm"
+          >
             <span className="truncate">
               {LABEL[column]}: <span className="font-mono text-xs">{String(customer[column])}</span>
             </span>
             <span className="flex items-center gap-2">
               <span
-                className={cn("h-2.5 rounded-full", value > 0 ? "bg-destructive" : "bg-wash-activity")}
+                className={cn(
+                  "h-2.5 rounded-full",
+                  value > 0 ? "bg-destructive" : "bg-wash-activity",
+                )}
                 style={{ width: `${(Math.abs(value) / max) * 100}%`, minWidth: 4 }}
               />
               <span className="shrink-0 font-mono text-[11px] text-muted-foreground">
@@ -155,9 +161,14 @@ const inputCls =
 
 function ScoreTab({ data }: { data: Data }) {
   const { model, rows } = data;
-  const [customer, setCustomer] = useState<Customer>(() => normalizeCustomer(typicalCustomer(rows)));
+  const [customer, setCustomer] = useState<Customer>(() =>
+    normalizeCustomer(typicalCustomer(rows)),
+  );
   const p = useMemo(() => predictProba(model, customer), [model, customer]);
-  const cats = useMemo(() => new Map(model.categorical.map((c) => [c.name, c.categories])), [model]);
+  const cats = useMemo(
+    () => new Map(model.categorical.map((c) => [c.name, c.categories])),
+    [model],
+  );
 
   const set = (patch: Partial<Customer>) =>
     setCustomer((c) => {
@@ -169,7 +180,11 @@ function ScoreTab({ data }: { data: Data }) {
 
   const select = (k: Column) => (
     <Field key={k} label={LABEL[k]}>
-      <select className={inputCls} value={String(customer[k])} onChange={(e) => set({ [k]: e.target.value })}>
+      <select
+        className={inputCls}
+        value={String(customer[k])}
+        onChange={(e) => set({ [k]: e.target.value })}
+      >
         {(cats.get(k) ?? []).map((v) => (
           <option key={v} value={v}>
             {v}
@@ -204,7 +219,14 @@ function ScoreTab({ data }: { data: Data }) {
             />
           </Field>
           {(
-            ["Contract", "PaymentMethod", "InternetService", "TechSupport", "OnlineSecurity", "PaperlessBilling"] as Column[]
+            [
+              "Contract",
+              "PaymentMethod",
+              "InternetService",
+              "TechSupport",
+              "OnlineSecurity",
+              "PaperlessBilling",
+            ] as Column[]
           ).map(select)}
         </div>
         <details className="rounded-lg border-2 border-dashed border-border p-3">
@@ -266,13 +288,14 @@ function SaveTab({ data }: { data: Data }) {
         <div className="speech-bubble text-sm">
           <p className="font-semibold">A customer from the test set</p>
           <p className="mt-1 text-muted-foreground">
-            {c.tenure} months in · {c.Contract} · {c.InternetService} internet · ${c.MonthlyCharges.toFixed(2)}/month ·{" "}
-            {c.PaymentMethod}
+            {c.tenure} months in · {c.Contract} · {c.InternetService} internet · $
+            {c.MonthlyCharges.toFixed(2)}/month · {c.PaymentMethod}
           </p>
         </div>
         <RiskMeter p={p} threshold={model.threshold} />
         <p className="font-mono text-xs text-muted-foreground">
-          Started at {pct(state.startP)} · budget left ${BUDGET - state.spent} of ${BUDGET} (illustrative prices)
+          Started at {pct(state.startP)} · budget left ${BUDGET - state.spent} of ${BUDGET}{" "}
+          (illustrative prices)
         </p>
       </div>
       <div className="space-y-3">
@@ -310,8 +333,8 @@ function SaveTab({ data }: { data: Data }) {
           New customer →
         </button>
         <p className="rounded-lg border-2 border-line bg-muted p-3 text-sm">
-          ⓘ These are the model's predictions, not proven causes. A real retention team would A/B test an offer before
-          rolling it out.
+          ⓘ These are the model's predictions, not proven causes. A real retention team would A/B
+          test an offer before rolling it out.
         </p>
       </div>
     </div>
@@ -329,7 +352,10 @@ function Stat({ label, value }: { label: string; value: string }) {
 
 function ThresholdTab({ data }: { data: Data }) {
   const { model, rows } = data;
-  const scored = useMemo(() => rows.map((r) => ({ y: r.y, p: r.p, monthly: r.x.MonthlyCharges })), [rows]);
+  const scored = useMemo(
+    () => rows.map((r) => ({ y: r.y, p: r.p, monthly: r.x.MonthlyCharges })),
+    [rows],
+  );
   const [t, setT] = useState(model.threshold);
   const m = useMemo(() => metricsAt(scored, t), [scored, t]);
   const cells = [
@@ -341,7 +367,10 @@ function ThresholdTab({ data }: { data: Data }) {
   return (
     <div className="space-y-6">
       <div>
-        <label className="block font-mono text-xs uppercase tracking-widest text-muted-foreground" htmlFor="thr">
+        <label
+          className="block font-mono text-xs uppercase tracking-widest text-muted-foreground"
+          htmlFor="thr"
+        >
           Alert threshold: {t.toFixed(2)}
         </label>
         <input
@@ -359,7 +388,8 @@ function ThresholdTab({ data }: { data: Data }) {
           onClick={() => setT(model.threshold)}
           className="mt-1 font-mono text-xs text-primary underline-offset-4 hover:underline"
         >
-          Reset to Abhishek's choice ({model.threshold.toFixed(2)}, picked from the precision-recall curve)
+          Reset to Abhishek's choice ({model.threshold.toFixed(2)}, picked from the precision-recall
+          curve)
         </button>
       </div>
       <div className="grid gap-4 sm:grid-cols-3" aria-live="polite">
@@ -376,9 +406,11 @@ function ThresholdTab({ data }: { data: Data }) {
         ))}
       </div>
       <p className="text-sm text-muted-foreground">
-        Monthly revenue on flagged customers: <b className="text-foreground">{usd(m.monthlyAtRisk)}</b>. If a retention
-        offer saves <b>35%</b> of them <span className="font-mono text-xs">(an assumption, not a measurement)</span>,
-        that is <b className="text-foreground">{usd(m.recoverableMonthly)}/month</b>, about{" "}
+        Monthly revenue on flagged customers:{" "}
+        <b className="text-foreground">{usd(m.monthlyAtRisk)}</b>. If a retention offer saves{" "}
+        <b>35%</b> of them{" "}
+        <span className="font-mono text-xs">(an assumption, not a measurement)</span>, that is{" "}
+        <b className="text-foreground">{usd(m.recoverableMonthly)}/month</b>, about{" "}
         {usd(m.recoverableMonthly * 12)}/year on these 1,409 customers.
       </p>
     </div>
@@ -410,18 +442,29 @@ export function ChurnLab() {
             onClick={() => setTab(t.id)}
             className={cn(
               "rounded-full border-2 border-line px-4 py-1.5 text-sm font-semibold transition",
-              tab === t.id ? "bg-foreground text-background" : "bg-background hover:-translate-y-0.5",
+              tab === t.id
+                ? "bg-foreground text-background"
+                : "bg-background hover:-translate-y-0.5",
             )}
           >
             {t.label}
           </button>
         ))}
       </div>
-      <div role="tabpanel" id={`lab-panel-${tab}`} aria-labelledby={`lab-tab-${tab}`} className="mt-6">
+      <div
+        role="tabpanel"
+        id={`lab-panel-${tab}`}
+        aria-labelledby={`lab-tab-${tab}`}
+        className="mt-6"
+      >
         {failed ? (
-          <p className="text-sm text-muted-foreground">The model didn't load. Refresh to try again.</p>
+          <p className="text-sm text-muted-foreground">
+            The model didn't load. Refresh to try again.
+          </p>
         ) : !data ? (
-          <p className="font-mono text-sm text-muted-foreground">loading the model (150 trees, ~40 KB)…</p>
+          <p className="font-mono text-sm text-muted-foreground">
+            loading the model (150 trees, ~40 KB)…
+          </p>
         ) : tab === "score" ? (
           <ScoreTab data={data} />
         ) : tab === "save" ? (
@@ -431,10 +474,11 @@ export function ChurnLab() {
         )}
       </div>
       <p className="mt-6 border-t-2 border-dashed border-border pt-4 text-xs text-muted-foreground">
-        <b className="text-foreground">How this runs:</b> Abhishek's real LightGBM model (150 trees) exported to JSON
-        and evaluated in TypeScript in your browser, with SHAP explanations computed the same way LightGBM does. Its
-        predictions match the Python model within 0.000001 on all 1,409 held-out customers. Test ROC-AUC 0.847
-        (cross-validated 0.849). Data: IBM's public Telco Customer Churn dataset.
+        <b className="text-foreground">How this runs:</b> Abhishek's real LightGBM model (150 trees)
+        exported to JSON and evaluated in TypeScript in your browser, with SHAP explanations
+        computed the same way LightGBM does. Its predictions match the Python model within 0.000001
+        on all 1,409 held-out customers. Test ROC-AUC 0.847 (cross-validated 0.849). Data: IBM's
+        public Telco Customer Churn dataset.
       </p>
     </Panel>
   );

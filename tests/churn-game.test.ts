@@ -37,7 +37,9 @@ describe("save the customer", () => {
   test("discount sets MonthlyCharges to 90%, rounded to cents", () => {
     const s0 = startGame(rows, THRESHOLD, 3);
     const s1 = play(s0, "discount10");
-    expect(s1.customer.MonthlyCharges).toBe(Math.round(s0.customer.MonthlyCharges * 0.9 * 100) / 100);
+    expect(s1.customer.MonthlyCharges).toBe(
+      Math.round(s0.customer.MonthlyCharges * 0.9 * 100) / 100,
+    );
   });
 
   test("the same move twice is refused", () => {
@@ -58,7 +60,10 @@ describe("save the customer", () => {
 
   test("tech support cannot be sold to a customer without internet", () => {
     const s0 = startGame(rows, THRESHOLD, 3);
-    const noNet = { ...s0, customer: { ...s0.customer, InternetService: "No", TechSupport: "No internet service" } };
+    const noNet = {
+      ...s0,
+      customer: { ...s0.customer, InternetService: "No", TechSupport: "No internet service" },
+    };
     const s1 = play(noNet, "techSupport");
     expect(s1.error).toBeDefined();
     expect(s1.customer.TechSupport).toBe("No internet service");

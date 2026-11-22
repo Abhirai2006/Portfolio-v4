@@ -33,7 +33,12 @@ export function EpisodeCover({
   const shot = project.images?.[0] ? pickShot(project.images[0], light, failed) : null;
 
   return (
-    <Panel as="article" chapter={meta.wash} tone="wash" className={cn("group h-full", size === "lg" ? "p-0" : "p-4")}>
+    <Panel
+      as="article"
+      chapter={meta.wash}
+      tone="wash"
+      className={cn("group h-full", size === "lg" ? "p-0" : "p-4")}
+    >
       <Link
         to="/projects/$slug"
         params={{ slug: project.slug }}
@@ -81,7 +86,12 @@ export function EpisodeCover({
             <span>{meta.label}</span>
             {size === "sm" && <span>{`· Ep. ${episode}`}</span>}
           </div>
-          <h3 className={cn("mt-2 font-display font-extrabold leading-tight", size === "lg" ? "text-2xl" : "text-lg")}>
+          <h3
+            className={cn(
+              "mt-2 font-display font-extrabold leading-tight",
+              size === "lg" ? "text-2xl" : "text-lg",
+            )}
+          >
             {project.title}
           </h3>
           <p className="mt-2 text-sm text-muted-foreground">{project.hook}</p>
@@ -91,13 +101,16 @@ export function EpisodeCover({
                 <div key={m.label} className="rounded-lg border-2 border-line bg-paper p-2">
                   <dt className="sr-only">{m.label}</dt>
                   <dd className="font-display text-lg font-extrabold leading-none">{m.value}</dd>
-                  <dd className="mt-1 text-[11px] leading-tight text-muted-foreground">{m.label}</dd>
+                  <dd className="mt-1 text-[11px] leading-tight text-muted-foreground">
+                    {m.label}
+                  </dd>
                 </div>
               ))}
             </dl>
           )}
           <span className="mt-auto pt-4 font-mono text-xs font-bold uppercase tracking-widest text-primary">
-            Read the episode <span className="inline-block transition group-hover:translate-x-1">→</span>
+            Read the episode{" "}
+            <span className="inline-block transition group-hover:translate-x-1">→</span>
           </span>
         </div>
       </Link>

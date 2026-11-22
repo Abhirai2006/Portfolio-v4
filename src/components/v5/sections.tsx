@@ -41,7 +41,10 @@ export function Chapter({
             Ch.{n}
             {move && <span className="ml-2 text-muted-foreground">{move}</span>}
           </span>
-          <h2 id={`${id}-title`} className="font-display text-3xl font-extrabold tracking-tight sm:text-5xl">
+          <h2
+            id={`${id}-title`}
+            className="font-display text-3xl font-extrabold tracking-tight sm:text-5xl"
+          >
             {CHAPTER_TITLES[id]}
           </h2>
         </header>
@@ -92,22 +95,25 @@ export function Origin() {
         </div>
       </Panel>
       <OriginPanel title="Mangaluru → Mysuru" className="md:col-span-2">
-        Born in Mangaluru with Tulu at home, raised in Mysuru. Speaks Tulu, Kannada, Hindi and English.
+        Born in Mangaluru with Tulu at home, raised in Mysuru. Speaks Tulu, Kannada, Hindi and
+        English.
       </OriginPanel>
       <OriginPanel title="Maths first" wash="stats" className="md:col-span-2">
-        No dramatic origin story: he loves maths, so he followed it into AI and ML. Linear algebra and calculus are his
-        strongest tools.
+        No dramatic origin story: he loves maths, so he followed it into AI and ML. Linear algebra
+        and calculus are his strongest tools.
       </OriginPanel>
       <OriginPanel title="B.E. AI & ML · GPA 9.44" wash="arcs" className="md:col-span-2">
-        Mysore University School of Engineering, 2024–2028, 5th semester. Semester GPAs 9.40, 9.30, 9.23, 9.82.
+        Mysore University School of Engineering, 2024–2028, 5th semester. Semester GPAs 9.40, 9.30,
+        9.23, 9.82.
       </OriginPanel>
       <OriginPanel title="Bluemind Solutions, 2026" wash="lab" className="md:col-span-2">
-        A 4-week, ~120-hour Core AI & ML internship (Aug–Sep 2026). His capstone, the churn model, runs live in Chapter
-        3.
+        A 4-week, ~120-hour Core AI & ML internship (Aug–Sep 2026). His capstone, the churn model,
+        runs live in Chapter 3.
       </OriginPanel>
       <OriginPanel title="How he builds" wash="ask" className="md:col-span-3">
-        He uses AI copilots on purpose for web scaffolding, so his own hours go into the algorithms and the maths. The ML
-        and algorithm work is his; the web layer is built with AI as a copilot, and he says so.
+        He uses AI copilots on purpose for web scaffolding, so his own hours go into the algorithms
+        and the maths. The ML and algorithm work is his; the web layer is built with AI as a
+        copilot, and he says so.
       </OriginPanel>
       <div className="md:col-span-3">
         <QuickFacts className="h-full bg-paper" />
@@ -140,8 +146,8 @@ export function Arcs({
   return (
     <div>
       <p className="max-w-2xl text-muted-foreground">
-        Every project is an episode. Main arcs first: the ML work, then the products with real users, a real client and
-        real tests. Each piece marks the kind of work.
+        Every project is an episode. Main arcs first: the ML work, then the products with real
+        users, a real client and real tests. Each piece marks the kind of work.
       </p>
       <div role="group" aria-label="Filter projects" className="mt-5 flex flex-wrap gap-2">
         {FILTERS.map((f) => (
@@ -158,10 +164,15 @@ export function Arcs({
       </div>
       {main.length > 0 && (
         <>
-          <h3 className="mt-8 font-mono text-xs font-bold uppercase tracking-widest text-muted-foreground">Main arcs</h3>
+          <h3 className="mt-8 font-mono text-xs font-bold uppercase tracking-widest text-muted-foreground">
+            Main arcs
+          </h3>
           <ul className="mt-3 grid gap-6 md:grid-cols-2">
             {main.map((p) => (
-              <li key={p.slug} className={cn(p.slug === "customer-churn-intelligence-system" && "md:col-span-2")}>
+              <li
+                key={p.slug}
+                className={cn(p.slug === "customer-churn-intelligence-system" && "md:col-span-2")}
+              >
                 <EpisodeCover project={p} episode={MAIN_ARCS.indexOf(p) + 1} />
               </li>
             ))}
@@ -176,7 +187,11 @@ export function Arcs({
           <ul className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {side.map((p) => (
               <li key={p.slug}>
-                <EpisodeCover project={p} episode={MAIN_ARCS.length + SIDE_STORIES.indexOf(p) + 1} size="sm" />
+                <EpisodeCover
+                  project={p}
+                  episode={MAIN_ARCS.length + SIDE_STORIES.indexOf(p) + 1}
+                  size="sm"
+                />
               </li>
             ))}
           </ul>
@@ -211,9 +226,9 @@ export function LabChapter() {
   return (
     <div ref={ref}>
       <p className="max-w-3xl text-muted-foreground">
-        His Bluemind capstone, live. This is the real LightGBM model from the internship, running in your browser: score
-        a customer and see why, try to save one with retention offers, or move the alert threshold and watch the
-        trade-off. Predictions, not proven causes.
+        His Bluemind capstone, live. This is the real LightGBM model from the internship, running in
+        your browser: score a customer and see why, try to save one with retention offers, or move
+        the alert threshold and watch the trade-off. Predictions, not proven causes.
       </p>
       <div className="mt-6">
         {near ? (
@@ -243,12 +258,28 @@ const TIERS = [
   {
     tier: "S",
     label: "Proficient",
-    items: ["Python", "NumPy", "Pandas", "Scikit-learn (Pipelines, ColumnTransformer, CV)", "Git", "Linear Algebra", "Calculus"],
+    items: [
+      "Python",
+      "NumPy",
+      "Pandas",
+      "Scikit-learn (Pipelines, ColumnTransformer, CV)",
+      "Git",
+      "Linear Algebra",
+      "Calculus",
+    ],
   },
   {
     tier: "A",
     label: "Intermediate",
-    items: ["XGBoost", "LightGBM", "Matplotlib / Seaborn", "Streamlit", "SQL", "DSA", "Probability & Statistics"],
+    items: [
+      "XGBoost",
+      "LightGBM",
+      "Matplotlib / Seaborn",
+      "Streamlit",
+      "SQL",
+      "DSA",
+      "Probability & Statistics",
+    ],
   },
   { tier: "B", label: "Learning / basics", items: ["PyTorch", "FastAPI", "Discrete Mathematics"] },
 ];
@@ -258,16 +289,26 @@ export function StatSheet() {
     <div className="grid gap-5 lg:grid-cols-[1fr_20rem]">
       <div className="space-y-4">
         {TIERS.map((t) => (
-          <Panel key={t.tier} chapter="stats" tone="wash" className="grid grid-cols-[4.5rem_1fr] items-stretch p-0">
+          <Panel
+            key={t.tier}
+            chapter="stats"
+            tone="wash"
+            className="grid grid-cols-[4.5rem_1fr] items-stretch p-0"
+          >
             <div className="flex flex-col items-center justify-center border-r-2 border-line bg-foreground py-4 text-background">
               <span className="font-display text-4xl font-extrabold leading-none">{t.tier}</span>
               <span className="mt-1 font-mono text-[10px] uppercase tracking-widest">tier</span>
             </div>
             <div className="p-4">
-              <div className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">{t.label}</div>
+              <div className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
+                {t.label}
+              </div>
               <ul className="mt-2 flex flex-wrap gap-2">
                 {t.items.map((i) => (
-                  <li key={i} className="rounded-md border-2 border-line bg-paper px-2.5 py-0.5 text-sm">
+                  <li
+                    key={i}
+                    className="rounded-md border-2 border-line bg-paper px-2.5 py-0.5 text-sm"
+                  >
                     {i}
                   </li>
                 ))}
@@ -278,8 +319,9 @@ export function StatSheet() {
       </div>
       <Bubble from="right" className="self-start">
         <p className="text-sm">
-          "I'm not claiming production experience with PyTorch or FastAPI yet. That's the next layer, on purpose. For web
-          stuff I use AI as a copilot; my own focus stays on the algorithms."
+          "I'm not claiming production experience with PyTorch or FastAPI yet. That's the next
+          layer, on purpose. For web stuff I use AI as a copilot; my own focus stays on the
+          algorithms."
         </p>
       </Bubble>
     </div>
@@ -305,8 +347,8 @@ export function AskPanel() {
   return (
     <div>
       <p className="max-w-2xl text-muted-foreground">
-        In a hurry? Ask the assistant. It only knows his résumé, projects and a few personal notes he wrote, so the
-        answers stay grounded.
+        In a hurry? Ask the assistant. It only knows his résumé, projects and a few personal notes
+        he wrote, so the answers stay grounded.
       </p>
       <Panel chapter="ask" tone="wash" className="mx-auto mt-6 max-w-3xl p-2 sm:p-4">
         <AskAbhishek />
@@ -328,15 +370,20 @@ export function SideQuest() {
         <SpeedLines className="opacity-15" />
         <div className="relative flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div className="max-w-2xl">
-            <p className="font-mono text-xs uppercase tracking-widest text-primary">Off the clock</p>
-            <h3 className="mt-3 font-display text-4xl font-extrabold sm:text-5xl">Abhi's Anime Shelf</h3>
+            <p className="font-mono text-xs uppercase tracking-widest text-primary">
+              Off the clock
+            </p>
+            <h3 className="mt-3 font-display text-4xl font-extrabold sm:text-5xl">
+              Abhi's Anime Shelf
+            </h3>
             <p className="mt-4 text-muted-foreground">
-              Every anime he has finished, shelved in 3D. Ask the shelf for a pick by mood, or leave him a
-              recommendation.
+              Every anime he has finished, shelved in 3D. Ask the shelf for a pick by mood, or leave
+              him a recommendation.
             </p>
           </div>
           <span className="font-mono text-sm font-bold uppercase tracking-widest text-primary">
-            Open the shelf <span className="inline-block transition group-hover:translate-x-1">→</span>
+            Open the shelf{" "}
+            <span className="inline-block transition group-hover:translate-x-1">→</span>
           </span>
         </div>
       </Panel>

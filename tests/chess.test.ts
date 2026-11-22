@@ -4,7 +4,16 @@ import { CHAPTERS } from "@/lib/chess/lines";
 import { MARSHALL, checkFinaleMove } from "@/lib/chess/marshall";
 
 test("homepage chapters in order", () => {
-  expect([...CHAPTERS]).toEqual(["origin", "arcs", "lab", "stats", "activity", "ask", "sidequest", "finale"]);
+  expect([...CHAPTERS]).toEqual([
+    "origin",
+    "arcs",
+    "lab",
+    "stats",
+    "activity",
+    "ask",
+    "sidequest",
+    "finale",
+  ]);
 });
 
 describe("Levitsky vs Marshall, Breslau 1912", () => {

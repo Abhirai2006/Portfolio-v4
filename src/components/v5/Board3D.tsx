@@ -26,7 +26,10 @@ const COLORS = {
   last: "#3d7bff",
 };
 
-const sqToXZ = (sq: string): [number, number] => [sq.charCodeAt(0) - 97 - 3.5, Number(sq[1]) - 1 - 3.5];
+const sqToXZ = (sq: string): [number, number] => [
+  sq.charCodeAt(0) - 97 - 3.5,
+  Number(sq[1]) - 1 - 3.5,
+];
 
 /* ---------- piece geometry ---------- */
 
@@ -64,7 +67,15 @@ let cache: Record<PieceType, THREE.BufferGeometry[]> | null = null;
 
 function geometries(): Record<PieceType, THREE.BufferGeometry[]> {
   if (cache) return cache;
-  const pawn = lathe([...BASE, [0.17, 0.2], [0.12, 0.36], [0.18, 0.39], [0.18, 0.41], [0.1, 0.43], ...arc(0.53, 0.13, -1.1, Math.PI / 2)]);
+  const pawn = lathe([
+    ...BASE,
+    [0.17, 0.2],
+    [0.12, 0.36],
+    [0.18, 0.39],
+    [0.18, 0.41],
+    [0.1, 0.43],
+    ...arc(0.53, 0.13, -1.1, Math.PI / 2),
+  ]);
   const rook = lathe([
     ...BASE,
     [0.22, 0.2],
@@ -114,9 +125,18 @@ function geometries(): Record<PieceType, THREE.BufferGeometry[]> {
 
   const knightBase = lathe([...BASE, [0.22, 0.2], [0.2, 0.24], [0, 0.24]]);
   const shapes = new SVGLoader()
-    .parse(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45"><path d="${KNIGHT_PATH}"/></svg>`)
+    .parse(
+      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45"><path d="${KNIGHT_PATH}"/></svg>`,
+    )
     .paths.flatMap((p) => p.toShapes());
-  const head = new THREE.ExtrudeGeometry(shapes, { depth: 6, bevelEnabled: true, bevelThickness: 1.4, bevelSize: 1, bevelSegments: 3, curveSegments: 16 });
+  const head = new THREE.ExtrudeGeometry(shapes, {
+    depth: 6,
+    bevelEnabled: true,
+    bevelThickness: 1.4,
+    bevelSize: 1,
+    bevelSegments: 3,
+    curveSegments: 16,
+  });
   head.center();
   // SVG y points down: turn it upright with a rotation (a negative scale would turn the mesh inside out).
   head.scale(0.026, 0.026, 0.026);
@@ -126,7 +146,14 @@ function geometries(): Record<PieceType, THREE.BufferGeometry[]> {
   head.translate(0, lift, 0);
   // The profile stays in the XY plane so the knight's silhouette faces the camera.
 
-  cache = { p: [pawn], r: [rook], b: [bishop], q: [queen], k: [king, crossV, crossH], n: [knightBase, head] };
+  cache = {
+    p: [pawn],
+    r: [rook],
+    b: [bishop],
+    q: [queen],
+    k: [king, crossV, crossH],
+    n: [knightBase, head],
+  };
   return cache;
 }
 
@@ -157,7 +184,17 @@ type PieceProps = {
   materials: Record<PieceColor, THREE.Material>;
 };
 
-function Piece({ sq, type, color, from, selected, hovered, onPick, onHover, materials }: PieceProps) {
+function Piece({
+  sq,
+  type,
+  color,
+  from,
+  selected,
+  hovered,
+  onPick,
+  onHover,
+  materials,
+}: PieceProps) {
   const ref = useRef<THREE.Group>(null);
   const [tx, tz] = sqToXZ(sq);
   const start = from ? sqToXZ(from) : [tx, tz];
@@ -202,7 +239,8 @@ function BoardMesh({ last }: { last: string[] }) {
   const squares = useMemo(() => {
     const out: { key: string; x: number; z: number; dark: boolean }[] = [];
     for (let f = 0; f < 8; f++)
-      for (let r = 0; r < 8; r++) out.push({ key: `${f}${r}`, x: f - 3.5, z: r - 3.5, dark: (f + r) % 2 === 0 });
+      for (let r = 0; r < 8; r++)
+        out.push({ key: `${f}${r}`, x: f - 3.5, z: r - 3.5, dark: (f + r) % 2 === 0 });
     return out;
   }, []);
   const lastSet = new Set(last.map(sqToXZ).map(([x, z]) => `${x},${z}`));
@@ -336,8 +374,19 @@ function Scene({
   const turn = game.turn();
   const materials = useMemo(
     () => ({
-      w: new THREE.MeshPhysicalMaterial({ color: COLORS.white, roughness: 0.22, clearcoat: 1, clearcoatRoughness: 0.08 }),
-      b: new THREE.MeshPhysicalMaterial({ color: COLORS.black, roughness: 0.3, metalness: 0.15, clearcoat: 1, clearcoatRoughness: 0.12 }),
+      w: new THREE.MeshPhysicalMaterial({
+        color: COLORS.white,
+        roughness: 0.22,
+        clearcoat: 1,
+        clearcoatRoughness: 0.08,
+      }),
+      b: new THREE.MeshPhysicalMaterial({
+        color: COLORS.black,
+        roughness: 0.3,
+        metalness: 0.15,
+        clearcoat: 1,
+        clearcoatRoughness: 0.12,
+      }),
     }),
     [],
   );
@@ -345,12 +394,21 @@ function Scene({
 
   const pieces = useMemo(() => {
     const out: { sq: string; type: PieceType; color: PieceColor }[] = [];
-    game.board().forEach((row) => row.forEach((p) => p && out.push({ sq: p.square, type: p.type as PieceType, color: p.color as PieceColor })));
+    game
+      .board()
+      .forEach((row) =>
+        row.forEach(
+          (p) =>
+            p &&
+            out.push({ sq: p.square, type: p.type as PieceType, color: p.color as PieceColor }),
+        ),
+      );
     return out;
   }, [game]);
 
   const targets = useMemo(
-    () => (selected ? game.moves({ square: selected as Square, verbose: true }).map((m) => m.to) : []),
+    () =>
+      selected ? game.moves({ square: selected as Square, verbose: true }).map((m) => m.to) : [],
     [game, selected],
   );
 

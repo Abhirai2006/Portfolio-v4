@@ -102,7 +102,11 @@ describe("screenshots", () => {
         for (const light of [false, true]) {
           const first = shotCandidates(shot, light)[0];
           const onDisk = first.startsWith("/media/") ? existsSync(`public${first}`) : true;
-          expect({ project: p.slug, first, onDisk }).toEqual({ project: p.slug, first, onDisk: true });
+          expect({ project: p.slug, first, onDisk }).toEqual({
+            project: p.slug,
+            first,
+            onDisk: true,
+          });
         }
       }
     }

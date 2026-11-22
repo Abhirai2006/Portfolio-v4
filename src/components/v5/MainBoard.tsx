@@ -22,7 +22,9 @@ function useBoardGame(onTravel: (d: Destination) => void) {
   const [busy, setBusy] = useState(false);
   /** Lights out: true from the visitor's move until just before the page travels. */
   const [dramatic, setDramatic] = useState(false);
-  const [msg, setMsg] = useState("Abhishek opened 1.Nf3. Your move: the piece you move decides where you go.");
+  const [msg, setMsg] = useState(
+    "Abhishek opened 1.Nf3. Your move: the piece you move decides where you go.",
+  );
   const timers = useRef<number[]>([]);
 
   useEffect(() => {
@@ -62,7 +64,9 @@ function useBoardGame(onTravel: (d: Destination) => void) {
       setDramatic(true);
       const afterVisitor = { fen: r.fen, last: [r.from, r.to], moves: [...state.moves, r.san] };
       save(afterVisitor);
-      setMsg(`${r.san}: your ${r.piece === "n" ? "knight" : r.piece === "p" ? "pawn" : r.piece === "b" ? "bishop" : r.piece === "r" ? "rook" : r.piece === "q" ? "queen" : "king"} heads to ${dest.label}.`);
+      setMsg(
+        `${r.san}: your ${r.piece === "n" ? "knight" : r.piece === "p" ? "pawn" : r.piece === "b" ? "bishop" : r.piece === "r" ? "rook" : r.piece === "q" ? "queen" : "king"} heads to ${dest.label}.`,
+      );
       track("cta_click", `board_${r.piece}`);
       timers.current.push(
         window.setTimeout(() => {
@@ -123,7 +127,8 @@ export function MainBoard({ onTravel }: { onTravel: (d: Destination) => void }) 
 
   useEffect(() => {
     if (!canUse3D()) return;
-    const idle = (window as Window & { requestIdleCallback?: (cb: () => void) => number }).requestIdleCallback;
+    const idle = (window as Window & { requestIdleCallback?: (cb: () => void) => number })
+      .requestIdleCallback;
     const go = () => setThree(true);
     if (idle) idle(go);
     else window.setTimeout(go, 400);
@@ -158,18 +163,33 @@ export function MainBoard({ onTravel }: { onTravel: (d: Destination) => void }) 
           <div className="relative aspect-square w-full overflow-hidden rounded-2xl sm:aspect-[5/4] border-2 border-line bg-[radial-gradient(circle_at_50%_30%,color-mix(in_oklab,var(--primary)_22%,var(--paper)),var(--background)_75%)] shadow-[6px_6px_0_var(--panel-shadow)]">
             {show3D ? (
               <Suspense fallback={<Flat game={game} canPlay={canPlay} />}>
-                <Board3D fen={game.fen} last={game.last} canPlay={canPlay} dramatic={game.dramatic} onMove={game.move} />
+                <Board3D
+                  fen={game.fen}
+                  last={game.last}
+                  canPlay={canPlay}
+                  dramatic={game.dramatic}
+                  onMove={game.move}
+                />
               </Suspense>
             ) : (
               <Flat game={game} canPlay={canPlay} />
             )}
           </div>
-          <p className="mt-3 rounded-lg border-2 border-line bg-paper p-3 text-sm" aria-live="polite">
+          <p
+            className="mt-3 rounded-lg border-2 border-line bg-paper p-3 text-sm"
+            aria-live="polite"
+          >
             {game.msg}
           </p>
           <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[11px] text-muted-foreground">
-            <span>{game.moves.map((m, i) => (i % 2 === 0 ? `${i / 2 + 1}.${m}` : m)).join(" ")}</span>
-            <button type="button" onClick={game.reset} className="uppercase tracking-widest text-primary hover:underline">
+            <span>
+              {game.moves.map((m, i) => (i % 2 === 0 ? `${i / 2 + 1}.${m}` : m)).join(" ")}
+            </span>
+            <button
+              type="button"
+              onClick={game.reset}
+              className="uppercase tracking-widest text-primary hover:underline"
+            >
               New game
             </button>
             {three && (
@@ -206,8 +226,14 @@ function Flat({ game, canPlay }: { game: ReturnType<typeof useBoardGame>; canPla
 
 function Legend({ onTravel }: { onTravel: (d: Destination) => void }) {
   return (
-    <aside aria-labelledby="legend-title" className="rounded-2xl border-2 border-line bg-paper p-4 shadow-[6px_6px_0_var(--panel-shadow)]">
-      <h2 id="legend-title" className="font-mono text-xs font-bold uppercase tracking-widest text-muted-foreground">
+    <aside
+      aria-labelledby="legend-title"
+      className="rounded-2xl border-2 border-line bg-paper p-4 shadow-[6px_6px_0_var(--panel-shadow)]"
+    >
+      <h2
+        id="legend-title"
+        className="font-mono text-xs font-bold uppercase tracking-widest text-muted-foreground"
+      >
         Move a piece, go somewhere
       </h2>
       <ul className="mt-3 space-y-1.5">
@@ -226,7 +252,20 @@ function Legend({ onTravel }: { onTravel: (d: Destination) => void }) {
               >
                 <ChessPiece type={t} color="w" className="h-7 w-7 shrink-0" />
                 <span className="text-sm">
-                  <span className="font-semibold capitalize">{({ n: "knight", r: "rook", b: "bishop", p: "pawn", k: "king", q: "queen" } as const)[t]}</span>
+                  <span className="font-semibold capitalize">
+                    {
+                      (
+                        {
+                          n: "knight",
+                          r: "rook",
+                          b: "bishop",
+                          p: "pawn",
+                          k: "king",
+                          q: "queen",
+                        } as const
+                      )[t]
+                    }
+                  </span>
                   <span className="text-muted-foreground"> → {d.label}</span>
                 </span>
               </a>
@@ -247,7 +286,9 @@ export function BackToBoard() {
   useEffect(() => {
     const el = document.getElementById("board");
     if (!el) return;
-    const io = new IntersectionObserver((e) => setShow(!e.some((x) => x.isIntersecting)), { threshold: 0.05 });
+    const io = new IntersectionObserver((e) => setShow(!e.some((x) => x.isIntersecting)), {
+      threshold: 0.05,
+    });
     io.observe(el);
     return () => io.disconnect();
   }, []);
@@ -256,7 +297,9 @@ export function BackToBoard() {
       type="button"
       onClick={() => {
         const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-        document.getElementById("board")?.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+        document
+          .getElementById("board")
+          ?.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
       }}
       className={cn(
         "fixed bottom-3 left-3 z-40 flex items-center gap-2 rounded-full border-2 border-line bg-paper px-4 py-2 text-sm font-bold shadow-[4px_4px_0_var(--panel-shadow)] transition",

@@ -3,14 +3,7 @@ import { cn } from "@/lib/utils";
 
 /** Chapter key used to pick a colour wash (`--wash-<chapter>` in styles.css). */
 export type Wash =
-  | "origin"
-  | "arcs"
-  | "lab"
-  | "stats"
-  | "activity"
-  | "ask"
-  | "sidequest"
-  | "finale";
+  "origin" | "arcs" | "lab" | "stats" | "activity" | "ask" | "sidequest" | "finale";
 
 /**
  * A webtoon panel: ink outline, hard offset shadow, optional colour wash.
@@ -95,7 +88,13 @@ export function SpeedLines({
     const w = 0.35 + ((i * 53) % 7) / 10;
     // Rounded so server and browser trig agree exactly (hydration).
     const r = (v: number) => Math.round(v * 100) / 100;
-    return { x1: r(50 + Math.cos(a) * inner), y1: r(50 + Math.sin(a) * inner), x2: r(50 + Math.cos(a) * 75), y2: r(50 + Math.sin(a) * 75), w };
+    return {
+      x1: r(50 + Math.cos(a) * inner),
+      y1: r(50 + Math.sin(a) * inner),
+      x2: r(50 + Math.cos(a) * 75),
+      y2: r(50 + Math.sin(a) * 75),
+      w,
+    };
   });
   return (
     <svg
@@ -105,7 +104,16 @@ export function SpeedLines({
       className={cn("pointer-events-none absolute inset-0 h-full w-full opacity-25", className)}
     >
       {lines.map((l, i) => (
-        <line key={i} x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2} stroke={color} strokeWidth={l.w} strokeLinecap="round" />
+        <line
+          key={i}
+          x1={l.x1}
+          y1={l.y1}
+          x2={l.x2}
+          y2={l.y2}
+          stroke={color}
+          strokeWidth={l.w}
+          strokeLinecap="round"
+        />
       ))}
     </svg>
   );
@@ -123,7 +131,10 @@ export function Screentone({
 }) {
   const id = `tone-${density}`;
   return (
-    <svg aria-hidden="true" className={cn("pointer-events-none absolute inset-0 h-full w-full opacity-15", className)}>
+    <svg
+      aria-hidden="true"
+      className={cn("pointer-events-none absolute inset-0 h-full w-full opacity-15", className)}
+    >
       <defs>
         <pattern id={id} width={density} height={density} patternUnits="userSpaceOnUse">
           <circle cx={density / 2} cy={density / 2} r={density / 4} fill={color} />

@@ -31,15 +31,36 @@ const SHAPES: Record<PieceType, { body: string; detail?: string }> = {
   },
 };
 
-export function ChessPiece({ type, color, className }: { type: PieceType; color: PieceColor; className?: string }) {
+export function ChessPiece({
+  type,
+  color,
+  className,
+}: {
+  type: PieceType;
+  color: PieceColor;
+  className?: string;
+}) {
   const { body, detail } = SHAPES[type];
   const fill = color === "w" ? "var(--piece-white)" : "var(--piece-black)";
   const line = color === "w" ? "var(--piece-black)" : "var(--piece-white)";
   return (
     <svg viewBox="0 0 45 45" className={className} aria-hidden="true">
-      <path d={body} fill={fill} stroke="var(--piece-black)" strokeWidth={2} strokeLinejoin="round" />
+      <path
+        d={body}
+        fill={fill}
+        stroke="var(--piece-black)"
+        strokeWidth={2}
+        strokeLinejoin="round"
+      />
       {detail && (
-        <path d={detail} fill="none" stroke={line} strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" />
+        <path
+          d={detail}
+          fill="none"
+          stroke={line}
+          strokeWidth={1.6}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
       )}
     </svg>
   );
