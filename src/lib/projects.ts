@@ -1,4 +1,3 @@
-import type { Project } from "@/components/portfolio/ProjectModal";
 import type { Shot } from "@/lib/shots";
 import muse1 from "@/assets/projects/muse-1.png.asset.json";
 import muse2 from "@/assets/projects/muse-2.png.asset.json";
@@ -31,21 +30,52 @@ export type CaseStudy = {
   stack: string[];
 };
 
+export type Project = {
+  title: string;
+  tag: string;
+  body: string;
+  tags: string[];
+  images?: Shot[];
+  live?: string;
+  repo?: string;
+};
+
+export type Kind = "ml" | "product" | "algo" | "practice";
+
 export type ProjectEntry = Project & {
+  kind: Kind;
+  arc: "main" | "side";
+  /** One line for the episode cover. */
+  hook: string;
+  /** Paid work for a real client (shown as "Paid client project"). */
+  client?: { name: string; paid: true };
+  /** An earlier project this one grew out of. */
+  prequel?: { title: string; repo: string; story: string };
+  /** A repo that will be public soon: shown as text until `isPublic` is flipped to true. */
+  pendingRepo?: { url: string; label: string; isPublic: boolean };
   slug: string;
   year: string;
   metrics: Metric[];
   caseStudy: CaseStudy;
 };
 
-export const PROJECTS: ProjectEntry[] = [
+const ALL: ProjectEntry[] = [
   {
     slug: "customer-churn-intelligence-system",
+    kind: "ml",
+    arc: "main",
+    hook: "Who's about to leave, why, and what it's worth: the real model runs right here on this page.",
     title: "Customer Churn Intelligence System",
     tag: "Capstone · Bluemind Solutions AI/ML Internship",
     year: "2026",
     body: "End-to-end tabular ML system on IBM Telco Customer Churn: leak-free preprocessing, model comparison, stratified 5-fold CV, business-driven threshold selection, error analysis, and a Streamlit dashboard for single and batch scoring.",
     tags: ["Python", "Scikit-learn", "XGBoost", "LightGBM", "Streamlit", "Pandas"],
+    repo: "https://github.com/Abhirai2006/telco-churn-intelligence-system",
+    pendingRepo: {
+      url: "https://github.com/Abhirai2006/bluemind-ml-internship-2026",
+      label: "Day-by-day internship work",
+      isPublic: false,
+    },
     metrics: [
       { value: "0.849", label: "CV ROC-AUC" },
       { value: "82%", label: "churner recall" },
@@ -91,6 +121,9 @@ export const PROJECTS: ProjectEntry[] = [
   },
   {
     slug: "muse-students-voice",
+    kind: "product",
+    arc: "main",
+    hook: "Anonymous complaints that only become official when enough verified students back them.",
     title: "MUSE Students Voice",
     tag: "Full-stack · SSR · Auth",
     year: "2026",
@@ -102,7 +135,7 @@ export const PROJECTS: ProjectEntry[] = [
       liveShot("muse", 3, muse3.url),
     ],
     live: "https://muse-studentsvoice.lovable.app/",
-    repo: "https://github.com/Abhirai2006",
+    repo: "https://github.com/Abhirai2006/MUSE-Students-Voice",
     metrics: [
       { value: "1,159", label: "verified student IDs" },
       { value: "0", label: "identities exposed to client" },
@@ -154,6 +187,9 @@ export const PROJECTS: ProjectEntry[] = [
   },
   {
     slug: "arthra",
+    kind: "product",
+    arc: "main",
+    hook: "Money tracking built for India: paise-exact, April-to-March years, a read-only link for your CA.",
     title: "Arthra",
     tag: "Personal finance for India",
     year: "2026",
@@ -165,7 +201,13 @@ export const PROJECTS: ProjectEntry[] = [
       liveShot("arthra", 3, "/media/projects/arthra-3.jpg"),
       "/media/projects/arthra-4.jpg",
     ],
-    live: "https://arthrafin-7qakibfj.manus.space",
+    live: "https://arthrafin-7qakibfj.manus.space/",
+    prequel: {
+      title: "Tally",
+      repo: "https://github.com/Abhirai2006/tally-my-cents",
+      story:
+        "Arthra started as Tally, a calm expense ledger with charts, CSV export and live sync. Tally showed what a generic tracker misses for Indian money, so Arthra rebuilt it properly: integer paise, April-to-March years, GST references and shared spaces.",
+    },
     repo: "https://github.com/Abhirai2006/arthra",
     metrics: [
       { value: "60", label: "automated tests passing" },
@@ -209,6 +251,9 @@ export const PROJECTS: ProjectEntry[] = [
   },
   {
     slug: "ittige",
+    kind: "product",
+    arc: "side",
+    hook: "Plastic waste into paving blocks, with the costs told honestly.",
     title: "Ittige",
     tag: "Management & Entrepreneurship · Team project",
     year: "2026",
@@ -265,6 +310,9 @@ export const PROJECTS: ProjectEntry[] = [
   },
   {
     slug: "o-patience",
+    kind: "algo",
+    arc: "side",
+    hook: "Five sorting algorithms, raced, sounded and quizzed.",
     title: "O(patience)",
     tag: "Algorithms · React · TypeScript",
     year: "2025",
@@ -277,7 +325,7 @@ export const PROJECTS: ProjectEntry[] = [
       "/media/projects/o-patience-og.jpg",
     ],
     live: "https://sort-visually-abhirai2006.lovable.app/",
-    repo: "https://github.com/Abhirai2006",
+    repo: "https://github.com/Abhirai2006/sorting-visualizer",
     metrics: [
       { value: "5", label: "algorithms, step-for-step" },
       { value: "~60fps", label: "on 200-element arrays" },
@@ -324,6 +372,9 @@ export const PROJECTS: ProjectEntry[] = [
   },
   {
     slug: "binary-search-visualizer",
+    kind: "algo",
+    arc: "side",
+    hook: "Watch O(log n) happen, one halving at a time.",
     title: "Binary Search Visualizer",
     tag: "Vanilla JS · Glassmorphism",
     year: "2025",
@@ -331,7 +382,7 @@ export const PROJECTS: ProjectEntry[] = [
     tags: ["JavaScript", "Netlify"],
     images: [liveShot("binary-search", 1, bs1.url), liveShot("binary-search", 2, bs2.url)],
     live: "https://binarysearch-abhirai.netlify.app/",
-    repo: "https://github.com/Abhirai2006",
+    repo: "https://github.com/Abhirai2006/Binary_Search",
     metrics: [
       { value: "0", label: "dependencies / frameworks" },
       { value: "log₂n", label: "steps shown live" },
@@ -367,6 +418,9 @@ export const PROJECTS: ProjectEntry[] = [
   },
   {
     slug: "git-github-viva-prep",
+    kind: "product",
+    arc: "side",
+    hook: "Flashcards, a quiz and real Git errors to debug before the lab viva.",
     title: "Git & GitHub Viva Prep",
     tag: "Lab viva · Study tool",
     year: "2026",
@@ -406,6 +460,9 @@ export const PROJECTS: ProjectEntry[] = [
   },
   {
     slug: "wonderland",
+    kind: "product",
+    arc: "side",
+    hook: "A birthday gift you unwrap, light up and blow out, made for a phone.",
     title: "Wonderland",
     tag: "Gift project · Interactive story",
     year: "2026",
@@ -465,13 +522,16 @@ export const PROJECTS: ProjectEntry[] = [
   },
   {
     slug: "cpp-console-suite",
+    kind: "practice",
+    arc: "side",
+    hook: "Three console programs that taught OOP and input validation.",
     title: "C++ Console Mini-Suite",
     tag: "OOP · Terminal",
     year: "2025",
     body: "Tic-Tac-Toe (board logic, win/tie), Mini Banking System (validated deposit/withdraw), Rock-Paper-Scissors. Built to practise OOP, arrays and modular design.",
     tags: ["C++", "OOP"],
     images: [],
-    repo: "https://github.com/Abhirai2006",
+    repo: "https://github.com/Abhirai2006/Console-mini-projects",
     metrics: [
       { value: "3", label: "programs, one shared core" },
       { value: "100%", label: "input paths validated" },
@@ -526,7 +586,175 @@ export const PROJECTS: ProjectEntry[] = [
       stack: ["C++17", "STL", "g++"],
     },
   },
+  {
+    slug: "ro-bio",
+    kind: "product",
+    arc: "main",
+    hook: "A robotics club website with a robot arm you can drive and a sumo bot you can push out of the ring.",
+    title: "Ro-Bio",
+    tag: "Club website · 3D · Physics",
+    year: "2026",
+    body: "The website of RO-BIO, the Biomedical and Robotic Engineering club at Mysore University School of Engineering: a 3D five-joint robot arm you can drive, a Robo Sumo physics game against a CPU with tactics, and a mascot who walks across every page.",
+    tags: ["TanStack Start", "React 19", "three.js", "Cloudflare Workers", "Vitest"],
+    images: [liveShot("ro-bio", 1), liveShot("ro-bio", 2)],
+    live: "https://ro-bio.hub-muse.workers.dev/",
+    repo: "https://github.com/Abhirai2006/Ro-Bio",
+    metrics: [
+      { value: "192", label: "tests passing" },
+      { value: "5-joint", label: "3D robot arm with gripper" },
+      { value: "min-jerk", label: "human-like reach curves" },
+    ],
+    caseStudy: {
+      summary:
+        "The club website for RO-BIO (Robotics + Biomedical) at MUSE, built so the site itself runs the club's idea: sense, decide, act, feed back.",
+      problem:
+        "A student club needs a site that makes people want to join, not a static list of events. RO-BIO works on robots and bodies, so the site had to show both, and stay easy for club members to update.",
+      constraints: [
+        "Students of every branch, on phones, on campus Wi-Fi.",
+        "Members must be able to change club facts in one place without touching components.",
+        "Respect reduced-motion settings everywhere; nothing may block reading.",
+      ],
+      built: [
+        "A 3D five-joint collaborative arm with a two-finger gripper (three.js). Tap a sample, tap a spot, and it plans the whole move; a manual teach-pendant mode drives it with arrows and one Grip button.",
+        "Every reach follows a minimum-jerk curve, the smooth start and stop of human reaching; the arm's maths lives in one module covered by unit tests.",
+        "Robo Sumo: wheel grip, real physics and a CPU that flanks, brakes near the edge and reverses when stuck.",
+        "Robo, the mascot: walks along the bottom of every page, hops onto cards, comments on what you're reading, and has an X-ray mode showing his skeleton and heart.",
+        "A members-only 3D merch studio (hoodies, tees and polos with names and numbers), with likes stored in a Cloudflare Durable Object.",
+      ],
+      tradeoffs: [
+        {
+          choice: "Minimum-jerk motion over linear tweening",
+          why: "Linear moves look robotic in the bad way. A human-like velocity profile makes the arm feel alive and is a real control-engineering idea, which suits a robotics club.",
+        },
+        {
+          choice: "Club facts in one file",
+          why: "Robo's lines and the pages read from the same facts, so nothing goes out of date when the committee changes.",
+        },
+      ],
+      outcome: [
+        "Live at ro-bio.hub-muse.workers.dev, deployed on every push to main.",
+        "192 unit tests cover the arm maths, the sumo physics and the site logic.",
+      ],
+      stack: ["TanStack Start", "React 19", "three.js", "Cloudflare Workers", "Durable Objects", "Vitest"],
+    },
+  },
+  {
+    slug: "earth-and-ethos",
+    kind: "product",
+    arc: "main",
+    hook: "A paid website for an architecture studio: a house that builds itself, then lets you walk in.",
+    title: "Earth & Ethos",
+    tag: "Paid client project · Architecture studio",
+    year: "2026",
+    body: "Portfolio site for Earth & Ethos (Architecture, Planning, Interiors), the studio of Ar. Santhosh K S in Bengaluru. The page is a house you walk into: it draws itself as a line drawing, builds itself course by course in a construction time-lapse, then opens its doors into a floor plan of rooms.",
+    tags: ["Next.js 16", "three.js", "Static export", "Cloudflare", "SEO"],
+    images: [liveShot("earth-and-ethos", 1), liveShot("earth-and-ethos", 2)],
+    live: "https://portfolio.earth-and-ethos.workers.dev/",
+    repo: "https://github.com/Abhirai2006/earth-and-ethos",
+    client: { name: "Earth & Ethos · Ar. Santhosh K S, Bengaluru", paid: true },
+    metrics: [
+      { value: "Paid", label: "client project" },
+      { value: "0", label: "3D model files: the house is drawn in code" },
+      { value: "7", label: "rooms on the floor-plan menu" },
+    ],
+    caseStudy: {
+      summary:
+        "A paid portfolio site for an architecture studio, where the website itself is a house you walk into.",
+      problem:
+        "An architecture studio is judged on how a space feels. A grid of photos can't show that, and a heavy 3D site that only works on new laptops would lose the clients who matter.",
+      constraints: [
+        "Real client, real deadline, and content still arriving from the studio, so every missing detail needed a graceful placeholder.",
+        "Must be found on Google for the studio's name and work: static HTML for every page.",
+        "Must work on slow phones and without WebGL.",
+      ],
+      built: [
+        "A physically rendered house in three.js with no model files: it starts as a line drawing, then a construction time-lapse follows real rules (85 mm brick courses, jaali bricks and timber fins dropping under gravity, roof concrete drying from dark to pale) while the sun sweeps the shadows across the facade.",
+        "The doors swing open and you walk into the hall: sunlight shafts through the pergola, dust that glows only in the sun, and exposure that adapts the way your eyes do indoors.",
+        "Every section is a room on a floor plan (Foyer, Study, Gallery, Drawing board, Material library, Guest book, Front desk), and every project gets its own page.",
+        "SEO built in: static export, per-page titles and canonicals, sitemap with images, and ProfessionalService, CreativeWork and BreadcrumbList structured data.",
+      ],
+      tradeoffs: [
+        {
+          choice: "Generate the house and its textures in code",
+          why: "No model files to download, every detail tunable, and the scene drops to lighter settings on slow GPUs.",
+        },
+        {
+          choice: "Static export over a server",
+          why: "Crawlers see all the text without JavaScript, and hosting is fast and cheap for a small studio.",
+        },
+        {
+          choice: "Still poster for reduced motion and no-WebGL browsers",
+          why: "Nobody gets a broken page; they get a photograph of the building instead.",
+        },
+      ],
+      outcome: [
+        "Delivered as a paid project; the demo is live while the studio connects its own domain.",
+        "Built to be handed over: every studio detail lives in one file, and empty values hide themselves.",
+      ],
+      stack: ["Next.js 16", "three.js", "TypeScript", "Cloudflare", "Web3Forms"],
+    },
+  },
+  {
+    slug: "lab-programs",
+    kind: "practice",
+    arc: "side",
+    hook: "IV-semester lab programs across OS, C++, DAA and graph algorithms, cleaned up and corrected.",
+    title: "IV Sem Lab Programs",
+    tag: "Coursework · C · C++ · Python",
+    year: "2026",
+    body: "The fourth-semester lab programs at MUSE across Operating Systems, C++, Design and Analysis of Algorithms and graph algorithms, rewritten and corrected so classmates can learn from working code.",
+    tags: ["C", "C++", "Python", "Algorithms"],
+    repo: "https://github.com/Abhirai2006/IV-semester-lab-programs",
+    metrics: [
+      { value: "4", label: "subjects: OS, C++, DAA, graphs" },
+      { value: "9", label: "OS programs: scheduling to memory fits" },
+      { value: "6", label: "C++ programs: OOP and operator overloading" },
+    ],
+    caseStudy: {
+      summary: "A cleaned-up, corrected set of IV-semester lab programs, shared for every MUSE student.",
+      problem: "Lab manuals had errors, and students copied programs that didn't run. A corrected, organised set saves everyone the guesswork.",
+      constraints: ["Must follow the syllabus topics.", "Each program has to run as written."],
+      built: [
+        "Operating Systems in C and Python: FCFS, SJF and priority scheduling, producer-consumer with semaphores, MFT and MVT, first, best and worst fit.",
+        "C++: reference swaps, friend functions, classes, and string and matrix operator overloading.",
+        "DAA in C: binary search, merge sort, quick sort and more, each with its complexity noted.",
+        "Graph algorithms in Python.",
+      ],
+      tradeoffs: [
+        {
+          choice: "Correct over identical-to-the-manual",
+          why: "A program that matches a wrong manual teaches the wrong thing.",
+        },
+      ],
+      outcome: ["Public under an MIT licence for anyone at MUSE."],
+      stack: ["C", "C++", "Python"],
+    },
+  },
 ];
+
+const ORDER = [
+  "customer-churn-intelligence-system",
+  "muse-students-voice",
+  "arthra",
+  "ro-bio",
+  "earth-and-ethos",
+  "o-patience",
+  "binary-search-visualizer",
+  "ittige",
+  "git-github-viva-prep",
+  "lab-programs",
+  "cpp-console-suite",
+  "wonderland",
+];
+
+/** Every project, main arcs first, in the order a recruiter should see them. */
+export const PROJECTS: ProjectEntry[] = ORDER.map((slug) => {
+  const p = ALL.find((x) => x.slug === slug);
+  if (!p) throw new Error(`Unknown project ${slug}`);
+  return p;
+});
+export const MAIN_ARCS = PROJECTS.filter((p) => p.arc === "main");
+export const SIDE_STORIES = PROJECTS.filter((p) => p.arc === "side");
 
 export function getProject(slug: string) {
   return PROJECTS.find((p) => p.slug === slug);
