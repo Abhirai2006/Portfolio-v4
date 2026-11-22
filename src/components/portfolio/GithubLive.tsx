@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { getGithubData } from "@/lib/github.functions";
+import { fetchGithubFromBrowser, type GithubResult } from "@/lib/github-shape";
 import { ContributionHeatmap } from "./ContributionHeatmap";
 
 const LANG_COLOR: Record<string, string> = {
@@ -15,7 +16,17 @@ const LANG_COLOR: Record<string, string> = {
 export function GithubLive() {
   const { data, isLoading } = useQuery({
     queryKey: ["github"],
-    queryFn: () => getGithubData(),
+    // Server first (cached, uses GITHUB_TOKEN if set). If the Worker's shared IP is rate-limited,
+    // ask GitHub from the browser, which spends the visitor's own quota instead.
+    queryFn: async (): Promise<GithubResult> => {
+      const server = await getGithubData();
+      if (server.ok) return server;
+      try {
+        return await fetchGithubFromBrowser();
+      } catch {
+        return server;
+      }
+    },
     staleTime: 5 * 60 * 1000,
   });
 
@@ -28,8 +39,19 @@ export function GithubLive() {
   }
   if (!data.ok) {
     return (
-      <div className="rounded-2xl border border-border p-8 text-center text-muted-foreground font-mono text-sm">
-        github: {data.error} · <a href="https://github.com/Abhirai2006" className="text-primary underline">visit profile</a>
+      <div className="space-y-8">
+        <div className="rounded-2xl border border-border p-8 text-center text-muted-foreground font-mono text-sm">
+          GitHub isn't answering right now, so repo stats are hidden for a moment.{" "}
+          <a
+            href="https://github.com/Abhirai2006"
+            target="_blank"
+            rel="noreferrer"
+            className="text-primary underline"
+          >
+            See everything on GitHub →
+          </a>
+        </div>
+        <ContributionHeatmap />
       </div>
     );
   }

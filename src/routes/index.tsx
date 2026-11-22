@@ -18,6 +18,7 @@ import { CommandPalette } from "@/components/portfolio/CommandPalette";
 import { track, observeSections, recordVisit } from "@/lib/analytics";
 import { Home, User, Github, FolderGit2, Sparkles, Clapperboard, Mail, ArrowRight, ArrowUpRight } from "lucide-react";
 import portrait from "@/assets/abhishek-portrait.jpg.asset.json";
+import ogCover from "@/assets/og-cover.jpg.asset.json";
 import { SITE } from "@/lib/site";
 
 
@@ -43,8 +44,30 @@ export const Route = createFileRoute("/")({
       { property: "og:type", content: "profile" },
       { name: "twitter:card", content: "summary_large_image" },
       { property: "og:url", content: `${SITE}/` },
+      { property: "og:image", content: `${SITE}${ogCover.url}` },
+      { name: "twitter:image", content: `${SITE}${ogCover.url}` },
     ],
     links: [{ rel: "canonical", href: `${SITE}/` }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Person",
+          name: "Abhishek Rai A",
+          jobTitle: "Aspiring Machine Learning Engineer",
+          url: `${SITE}/`,
+          image: `${SITE}${portrait.url}`,
+          address: { "@type": "PostalAddress", addressLocality: "Mysuru", addressRegion: "Karnataka", addressCountry: "IN" },
+          alumniOf: { "@type": "CollegeOrUniversity", name: "Mysore University School of Engineering" },
+          knowsAbout: ["Machine Learning", "Python", "Scikit-learn", "LightGBM", "XGBoost", "Data Structures and Algorithms"],
+          sameAs: [
+            "https://github.com/Abhirai2006",
+            "https://www.linkedin.com/in/abhishek-rai-a-00067238b/",
+          ],
+        }),
+      },
+    ],
   }),
   component: Index,
 });
@@ -183,7 +206,7 @@ function Hero({ visitorCount }: { visitorCount: number | null }) {
           <dl className="mt-12 grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-2xl">
             <Kpi k="9.44" sub="Avg GPA / 10" />
              <Kpi k="V" sub="Semester" />
-            <Kpi k="3+1" sub="Web apps · C++ suite" />
+            <Kpi k={String(PROJECTS.length)} sub="Projects shipped" />
             <VisitorKpi value={visitorCount} />
           </dl>
         </div>
@@ -402,7 +425,9 @@ function Projects() {
   const [active, setActive] = useState<Project | null>(null);
   const [hoveringCard, setHoveringCard] = useState(false);
   return (
-    <section id="projects" className="mx-auto max-w-6xl px-6 py-28">
+    // overflow-x-clip: the ring's side cards swing past the screen edge on phones and tablets.
+    // `clip` (unlike `hidden`) keeps vertical overflow and doesn't create a scroll container.
+    <section id="projects" className="mx-auto max-w-6xl overflow-x-clip px-6 py-28">
       <ChapterHeader n="04" title="The Arsenal" />
       <p className="mt-6 max-w-2xl text-muted-foreground">
         Click any card for screenshots and the live site, or open the full case study for the problem,
@@ -575,18 +600,23 @@ function Contact() {
             An algorithm to crack, a theorem to prove, or the latest anime arc. Drop a line.
           </p>
           <div className="flex flex-wrap gap-3">
-            <button
-              onClick={() => setRevealed(true)}
-              className="rounded-full bg-primary text-primary-foreground px-5 py-2.5 text-sm font-semibold hover:opacity-90"
-            >
-              {revealed ? (
-                <a href={`mailto:${email}`} className="text-primary-foreground">
-                  {email}
-                </a>
-              ) : (
-                "Reveal email"
-              )}
-            </button>
+            {revealed ? (
+              <a
+                href={`mailto:${email}`}
+                onClick={() => track("cta_click", "email_contact")}
+                className="rounded-full bg-primary text-primary-foreground px-5 py-2.5 text-sm font-semibold hover:opacity-90"
+              >
+                {email}
+              </a>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setRevealed(true)}
+                className="rounded-full bg-primary text-primary-foreground px-5 py-2.5 text-sm font-semibold hover:opacity-90"
+              >
+                Reveal email
+              </button>
+            )}
             <a
               href="https://github.com/Abhirai2006"
               target="_blank"
@@ -622,7 +652,7 @@ function Footer() {
   return (
     <footer className="border-t border-border">
       <div className="mx-auto max-w-7xl px-6 py-10 flex flex-wrap items-center justify-between gap-4 text-xs font-mono text-muted-foreground">
-        <div>© 2026 · Abhishek Rai A · Portfolio v3</div>
+        <div>© {new Date().getFullYear()} · Abhishek Rai A · Portfolio v4</div>
         <div>Built with TanStack Start · Three.js</div>
       </div>
     </footer>

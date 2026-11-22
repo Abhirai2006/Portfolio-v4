@@ -40,7 +40,7 @@ I wrote the ML and algorithm projects myself. The web side of this site was buil
 | **Projects on a ring** | The Arsenal is a slowly turning 3D ring of project cards. Drag it, flick it, use the arrows or the keyboard, and click a card to open it. It respects reduced motion. |
 | **Screenshots that follow your theme** | Each project pop-up shows a dark or light screenshot to match the theme the visitor is using, and swaps when they flip the toggle. |
 | **Ask Abhishek** | A chat assistant that only knows my résumé and projects. It streams replies from the server, retries once if the model is busy, then falls back to a lighter model. |
-| **Live GitHub activity** | Recent repositories and a contribution heatmap, pulled from the GitHub API and cached for 10 minutes. |
+| **Live GitHub activity** | Recent repositories and a contribution heatmap, pulled from the GitHub API and cached for 10 minutes. If GitHub rate-limits the server, the last good copy is kept, and failing that the browser asks GitHub directly. |
 | **Anime shelf** | A scroll-driven 3D shelf of 60 titles at `/anime`, with mood-based picks, random discovery, a watch breakdown and recommendations from visitors. |
 | **Reviews and résumé** | Visitors can leave a review at `/reviews`. The résumé at `/resume` is a clean page that prints well. |
 | **Jump anywhere** | Press `Cmd/Ctrl + K` to open a command palette for chapters, case studies and contact options. |
@@ -151,7 +151,7 @@ The dev server runs at http://localhost:8080.
 | `AI_API_KEY` | Gemini key for the chat and mood picks. **Secret, server only.** |
 | `AI_MODEL`, `AI_FALLBACK_MODEL` | Optional. Default to `gemini-flash-latest` and `gemini-flash-lite-latest`. |
 | `AI_BASE_URL` | Optional. Points the chat at an OpenAI-compatible provider instead of Gemini. |
-| `GITHUB_TOKEN` | Optional. Raises the GitHub API rate limit. **Secret.** |
+| `GITHUB_TOKEN` | Recommended. Without it the Worker shares GitHub's 60-requests-an-hour limit with everything else on Cloudflare's IPs, so the live activity section falls back to fetching from the visitor's browser. A fine-grained token with no permissions is enough. **Secret.** |
 
 Only public values go in `.env`. Secrets such as `AI_API_KEY` are added in Cloudflare as Secrets and are never committed.
 
@@ -187,6 +187,7 @@ If the chat says "AI is not configured yet", the key is in the wrong list.
 | `bun run lint` and `bun run format` | Checks and formats the code. |
 | `node scripts/capture-projects.mjs` | Takes dark and light screenshots of the live project sites into `public/media/live/`. It works out whether a site has two themes, checks brightness so they are never swapped, and hides host badges. Add `--only <name>` for one site. |
 | `node scripts/screenshots.mjs <url>` | Retakes the README images in `docs/screenshots/` from a running copy of the site. |
+| `node scripts/og-cover.mjs` | Renders the 1200×630 link-preview image into `public/media/og-cover.jpg` from the portrait and the project count. Rerun it when the numbers on it change. |
 | `node scripts/fetch-assets.mjs` | Downloads the share image and older project screenshots from my previous site, once. |
 
 Project screenshots are named `<project>-<number>-dark.jpg` and `<project>-<number>-light.jpg`, or `<project>-<number>.jpg` for sites with a single theme. A missing file is skipped, so nothing breaks while they are added.

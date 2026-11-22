@@ -11,6 +11,8 @@ import {
 import type { ReactNode } from "react";
 
 import appCss from "../styles.css?url";
+import ogCover from "@/assets/og-cover.jpg.asset.json";
+import { SITE } from "@/lib/site";
 
 function NotFoundComponent() {
   return (
@@ -107,6 +109,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Abhishek Rai A - ML Engineer · Live Projects" },
       { name: "twitter:description", content: "Portfolio of Abhishek Rai A, a B.E. AI & ML student and Bluemind Solutions intern who built a Customer Churn Intelligence System." },
+      // Default share image; pages with their own (anime, case studies with screenshots) override it.
+      { property: "og:image", content: `${SITE}${ogCover.url}` },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { property: "og:image:alt", content: "Abhishek Rai A, Aspiring ML Engineer" },
+      { name: "twitter:image", content: `${SITE}${ogCover.url}` },
+      { name: "theme-color", content: "#0b1220" },
     ],
     links: [
       {
