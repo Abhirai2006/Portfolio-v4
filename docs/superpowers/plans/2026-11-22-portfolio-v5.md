@@ -231,4 +231,4 @@ scripts/smoke.mjs                                         Playwright route check
 - [ ] Failing tests: mapping is exactly the six in spec §12; `START_FEN` is after 1.Nf3 with black to move; `whiteReply` returns a legal move for 50 random-but-seeded positions, takes a hanging queen, returns null when the game is over; `applyVisitorMove` rejects illegal moves and white moves.
 - [ ] Implement; tests pass.
 - [ ] UI: 3D board (lathe-turned pieces, knight extruded from the ChessPiece outline, clearcoat materials, soft shadows, procedural room lighting, no network assets), pick → targets → move animation → white reply → travel; 2D fallback; legend links; Back-to-board button; sessionStorage game.
-- [ ] Smoke: `/` mustContain "Back to the board"-free SSR? No: mustContain the legend labels; chessCheck plays a knight move on the 2D/3D board via the legend-independent API and expects arrival at `#lab`.
+- [ ] Smoke: `/` mustContain the six legend labels; chessCheck plays a knight move on the board and expects arrival at `#lab`, then "Back to the board" returns to `#board`.

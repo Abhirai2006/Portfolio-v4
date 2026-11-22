@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { PROJECTS } from "@/lib/projects";
+import { CHAPTERS, CHAPTER_TITLES } from "@/lib/chess/lines";
 import { MAIL_INTENTS } from "@/lib/contact";
 import { track } from "@/lib/analytics";
 
@@ -28,14 +29,15 @@ export function CommandPalette() {
     };
     const open_ = (href: string) => () => window.open(href, "_blank", "noopener");
     return [
-      { id: "top", label: "Top of page", group: "Chapters", hint: "00", run: go("top") },
-      { id: "origin", label: "Origin Story", group: "Chapters", hint: "01", run: go("origin") },
-      { id: "arsenal", label: "Power Levels", group: "Chapters", hint: "02", run: go("arsenal") },
-      { id: "github", label: "Live Code Activity", group: "Chapters", hint: "03", run: go("github") },
-      { id: "projects", label: "The Arsenal", group: "Chapters", hint: "04", run: go("projects") },
-      { id: "ask", label: "Ask Abhishek", group: "Chapters", hint: "05", run: go("ask") },
-      { id: "shelf", label: "Anime Shelf", group: "Chapters", hint: "06", run: go("shelf") },
-      { id: "contact", label: "Contact", group: "Chapters", hint: "07", run: go("contact") },
+      { id: "board", label: "The main board", group: "Chapters", hint: "♞", run: go("board") },
+      ...CHAPTERS.map((c, i) => ({
+        id: c,
+        label: CHAPTER_TITLES[c],
+        group: "Chapters",
+        hint: String(i + 1),
+        run: go(c),
+      })),
+      { id: "contact", label: "Contact", group: "Chapters", hint: "♛", run: go("contact") },
       {
         id: "resume",
         label: "Résumé page",
@@ -52,7 +54,7 @@ export function CommandPalette() {
         },
       ...PROJECTS.map((p) => ({
         id: `case-${p.slug}`,
-        label: `${p.title} (case study)`,
+        label: `${p.title} (episode)`,
         group: "Case studies",
         hint: `/projects/${p.slug}`,
         run: () => void navigate({ to: "/projects/$slug", params: { slug: p.slug } }),

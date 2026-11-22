@@ -117,6 +117,16 @@ for (const route of routes) {
       await ctx.close();
     }
   }
+  if (route.pdfMaxPages) {
+    const ctx = await browser.newContext();
+    const page = await ctx.newPage();
+    await page.goto(base + route.path, { waitUntil: "domcontentloaded" });
+    await page.waitForTimeout(1500);
+    const pdf = await page.pdf({ format: "A4" });
+    const pages = (pdf.toString("latin1").match(/\/Type\s*\/Page[^s]/g) || []).length;
+    if (pages > route.pdfMaxPages) fail(`${route.path}: prints on ${pages} A4 pages (max ${route.pdfMaxPages})`);
+    await ctx.close();
+  }
   // No-JS pass: server-rendered HTML alone.
   const ctx = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 900 } });
   const page = await ctx.newPage();

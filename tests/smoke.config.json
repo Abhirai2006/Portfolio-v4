@@ -32,8 +32,13 @@
     {
       "path": "/resume",
       "mustContain": [
-        "Abhishek Rai A"
-      ]
+        "Abhishek Rai A",
+        "Seeking ML internships",
+        "Bluemind Solutions",
+        "Earth &amp; Ethos",
+        "Quick facts"
+      ],
+      "pdfMaxPages": 2
     },
     {
       "path": "/reviews",

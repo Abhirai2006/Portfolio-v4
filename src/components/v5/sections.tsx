@@ -5,11 +5,11 @@ import { EpisodeCover, KIND_META } from "@/components/art/EpisodeCover";
 import { GithubLive } from "@/components/portfolio/GithubLive";
 import { AskAbhishek } from "@/components/portfolio/AskAbhishek";
 import { MAIN_ARCS, SIDE_STORIES, type Kind } from "@/lib/projects";
-import { PERSON, QUICK_FACTS } from "@/lib/facts";
 import { CHAPTER_TITLES, type ChapterId } from "@/lib/chess/lines";
 import { track } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 import portrait from "@/assets/abhishek-portrait.jpg.asset.json";
+import { QuickFacts } from "./QuickFacts";
 
 /* ---------- chapter frame ---------- */
 
@@ -72,26 +72,6 @@ function OriginPanel({
       <h3 className="font-display text-xl font-extrabold">{title}</h3>
       <div className="mt-2 text-sm leading-relaxed text-muted-foreground">{children}</div>
     </Panel>
-  );
-}
-
-export function QuickFacts({ className }: { className?: string }) {
-  return (
-    <div className={cn("rounded-xl border-2 border-dashed border-line p-4", className)}>
-      <h3 className="font-mono text-xs font-bold uppercase tracking-widest text-muted-foreground">
-        Quick facts: who is {PERSON.name}?
-      </h3>
-      <ul className="mt-2 space-y-1.5 text-sm">
-        {QUICK_FACTS.map((f) => (
-          <li key={f} className="flex gap-2">
-            <span aria-hidden="true" className="text-primary">
-              ▸
-            </span>
-            <span>{f}</span>
-          </li>
-        ))}
-      </ul>
-    </div>
   );
 }
 
