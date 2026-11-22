@@ -481,7 +481,7 @@ function AnimeShelf() {
         <div className="flex flex-col gap-8 sm:flex-row sm:items-end sm:justify-between">
           <div className="max-w-3xl">
             <p className="font-mono text-xs uppercase tracking-widest text-primary">Anime</p>
-            <h2 className="mt-4 font-one-piece text-4xl leading-tight text-foreground sm:text-6xl">Abhi's Anime Shelf</h2>
+            <h2 className="mt-4 font-display text-4xl leading-tight text-foreground sm:text-6xl">Abhi's Anime Shelf</h2>
             <p className="mt-5 text-lg leading-relaxed text-muted-foreground">
               Every anime I've finished, shelved in 3D. Scroll through 60 titles, ask the shelf for a pick by mood, or leave me a recommendation for what to watch next.
             </p>

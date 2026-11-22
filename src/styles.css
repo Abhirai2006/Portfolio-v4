@@ -5,16 +5,6 @@
 @custom-variant dark (&:is(.dark *));
 @custom-variant light (&:is(html.light *));
 
-/* Portfolio v3: navy, electric blue, emerald, and red */
-
-@font-face {
-  font-family: "One Piece Accent";
-  src: url("/media/one-piece-font.ttf") format("truetype");
-  font-display: swap;
-  font-weight: 400;
-  font-style: normal;
-}
-
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -59,53 +49,77 @@
   --color-gold: var(--gold);
   --color-gold-soft: var(--gold-soft);
   --color-ink: var(--ink);
+  --color-line: var(--line);
+  --color-paper: var(--paper);
+  --color-wash-origin: var(--wash-origin);
+  --color-wash-arcs: var(--wash-arcs);
+  --color-wash-lab: var(--wash-lab);
+  --color-wash-stats: var(--wash-stats);
+  --color-wash-activity: var(--wash-activity);
+  --color-wash-ask: var(--wash-ask);
+  --color-wash-sidequest: var(--wash-sidequest);
+  --color-wash-finale: var(--wash-finale);
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Bricolage Grotesque", "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
   --font-chapter: "Bebas Neue", "Space Grotesk", sans-serif;
   --font-script: "Allura", "Caveat", cursive;
-   --font-one-piece: "One Piece Accent", "Bebas Neue", sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
+/* Portfolio v5 "The Réti Volume": webtoon night ink (dark) and paper (light) */
 :root {
-  --radius: 0.5rem;
-  --background: oklch(0.11 0.015 250);
-  --foreground: oklch(0.96 0.005 250);
-  --ink: oklch(0.08 0.02 250);
-  --card: oklch(0.15 0.02 250);
-  --card-foreground: oklch(0.96 0.005 250);
-  --popover: oklch(0.15 0.02 250);
-  --popover-foreground: oklch(0.96 0.005 250);
-  --primary: oklch(0.7 0.17 240);
-  --primary-foreground: oklch(0.1 0.02 250);
-  --secondary: oklch(0.2 0.02 250);
-  --secondary-foreground: oklch(0.96 0.005 250);
-  --muted: oklch(0.18 0.015 250);
-  --muted-foreground: oklch(0.68 0.02 250);
-  --accent: oklch(0.75 0.19 155);
-  --accent-foreground: oklch(0.1 0.02 250);
-  --destructive: oklch(0.65 0.24 25);
-  --destructive-foreground: oklch(0.98 0.005 60);
-  --border: oklch(0.25 0.02 250);
-  --input: oklch(0.2 0.02 250);
-  --ring: oklch(0.7 0.17 240);
-  --gold: oklch(0.7 0.17 240);
-  --gold-soft: oklch(0.82 0.13 235);
-  --grad-from: oklch(0.96 0.005 250);
-  --grad-to: oklch(0.7 0.17 240);
-  --chart-1: oklch(0.7 0.17 240);
-  --chart-2: oklch(0.75 0.19 155);
-  --chart-3: oklch(0.65 0.24 25);
-  --chart-4: oklch(0.96 0.005 250);
-  --chart-5: oklch(0.72 0.16 300);
-  --sidebar: oklch(0.13 0.02 250);
-  --sidebar-foreground: oklch(0.96 0.005 250);
-  --sidebar-primary: oklch(0.7 0.17 240);
-  --sidebar-primary-foreground: oklch(0.1 0.02 250);
-  --sidebar-accent: oklch(0.2 0.02 250);
-  --sidebar-accent-foreground: oklch(0.96 0.005 250);
-  --sidebar-border: oklch(0.25 0.02 250);
-  --sidebar-ring: oklch(0.7 0.17 240);
+  --radius: 0.75rem;
+  --background: oklch(0.16 0.025 275);
+  --foreground: oklch(0.95 0.02 85);
+  --ink: oklch(0.12 0.02 275);
+  --card: oklch(0.2 0.03 275);
+  --card-foreground: oklch(0.95 0.02 85);
+  --popover: oklch(0.2 0.03 275);
+  --popover-foreground: oklch(0.95 0.02 85);
+  --primary: oklch(0.8 0.15 70);
+  --primary-foreground: oklch(0.16 0.025 275);
+  --secondary: oklch(0.24 0.03 275);
+  --secondary-foreground: oklch(0.95 0.02 85);
+  --muted: oklch(0.22 0.025 275);
+  --muted-foreground: oklch(0.76 0.02 85);
+  --accent: oklch(0.8 0.12 200);
+  --accent-foreground: oklch(0.16 0.025 275);
+  --destructive: oklch(0.66 0.21 25);
+  --destructive-foreground: oklch(0.98 0.01 85);
+  --border: oklch(0.34 0.03 275);
+  --input: oklch(0.26 0.03 275);
+  --ring: oklch(0.8 0.15 70);
+  --gold: oklch(0.8 0.15 70);
+  --gold-soft: oklch(0.86 0.1 75);
+  --grad-from: oklch(0.97 0.02 85);
+  --grad-to: oklch(0.8 0.15 70);
+  --chart-1: oklch(0.8 0.15 70);
+  --chart-2: oklch(0.8 0.12 200);
+  --chart-3: oklch(0.66 0.21 25);
+  --chart-4: oklch(0.95 0.02 85);
+  --chart-5: oklch(0.7 0.16 290);
+  --sidebar: oklch(0.18 0.03 275);
+  --sidebar-foreground: oklch(0.95 0.02 85);
+  --sidebar-primary: oklch(0.8 0.15 70);
+  --sidebar-primary-foreground: oklch(0.16 0.025 275);
+  --sidebar-accent: oklch(0.24 0.03 275);
+  --sidebar-accent-foreground: oklch(0.95 0.02 85);
+  --sidebar-border: oklch(0.34 0.03 275);
+  --sidebar-ring: oklch(0.8 0.15 70);
+  /* webtoon */
+  --line: oklch(0.93 0.02 85);
+  --paper: oklch(0.2 0.03 275);
+  --gutter: clamp(0.75rem, 2.5vw, 1.25rem);
+  --wash-origin: oklch(0.78 0.14 60);
+  --wash-arcs: oklch(0.72 0.15 285);
+  --wash-lab: oklch(0.8 0.12 195);
+  --wash-stats: oklch(0.74 0.16 330);
+  --wash-activity: oklch(0.78 0.15 145);
+  --wash-ask: oklch(0.76 0.14 20);
+  --wash-sidequest: oklch(0.8 0.11 240);
+  --wash-finale: oklch(0.84 0.14 85);
+  --sq-light: oklch(0.86 0.04 85);
+  --sq-dark: oklch(0.52 0.06 275);
 }
 
 .dark {
@@ -115,35 +129,47 @@
 
 /* ---------- Light theme (same palette, inverted surfaces) ---------- */
 html.light {
-  --background: oklch(0.985 0.003 250);
-  --foreground: oklch(0.19 0.02 250);
-  --ink: oklch(0.19 0.02 250);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.19 0.02 250);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.19 0.02 250);
-  --primary: oklch(0.55 0.19 250);
-  --primary-foreground: oklch(0.99 0.003 250);
-  --secondary: oklch(0.955 0.008 250);
-  --secondary-foreground: oklch(0.22 0.02 250);
-  --muted: oklch(0.95 0.006 250);
-  --muted-foreground: oklch(0.48 0.02 250);
-  --accent: oklch(0.58 0.16 155);
-  --accent-foreground: oklch(0.99 0.003 250);
-  --destructive: oklch(0.58 0.22 25);
-  --destructive-foreground: oklch(0.99 0.003 60);
-  --border: oklch(0.9 0.008 250);
-  --input: oklch(0.94 0.008 250);
-  --ring: oklch(0.55 0.19 250);
-  --gold: oklch(0.55 0.19 250);
-  --gold-soft: oklch(0.65 0.15 235);
-  --grad-from: oklch(0.28 0.05 250);
-  --grad-to: oklch(0.55 0.19 250);
-  --sidebar: oklch(0.99 0.003 250);
-  --sidebar-foreground: oklch(0.19 0.02 250);
-  --sidebar-accent: oklch(0.95 0.006 250);
-  --sidebar-accent-foreground: oklch(0.22 0.02 250);
-  --sidebar-border: oklch(0.9 0.008 250);
+  --background: oklch(0.975 0.012 85);
+  --foreground: oklch(0.2 0.03 275);
+  --ink: oklch(0.2 0.03 275);
+  --card: oklch(0.995 0.006 85);
+  --card-foreground: oklch(0.2 0.03 275);
+  --popover: oklch(0.995 0.006 85);
+  --popover-foreground: oklch(0.2 0.03 275);
+  --primary: oklch(0.52 0.15 50);
+  --primary-foreground: oklch(0.99 0.005 85);
+  --secondary: oklch(0.94 0.015 85);
+  --secondary-foreground: oklch(0.22 0.03 275);
+  --muted: oklch(0.94 0.012 85);
+  --muted-foreground: oklch(0.45 0.03 275);
+  --accent: oklch(0.48 0.11 215);
+  --accent-foreground: oklch(0.99 0.005 85);
+  --destructive: oklch(0.55 0.21 25);
+  --destructive-foreground: oklch(0.99 0.005 85);
+  --border: oklch(0.84 0.02 85);
+  --input: oklch(0.92 0.015 85);
+  --ring: oklch(0.52 0.15 50);
+  --gold: oklch(0.52 0.15 50);
+  --gold-soft: oklch(0.62 0.13 55);
+  --grad-from: oklch(0.24 0.04 275);
+  --grad-to: oklch(0.52 0.15 50);
+  --sidebar: oklch(0.99 0.006 85);
+  --sidebar-foreground: oklch(0.2 0.03 275);
+  --sidebar-accent: oklch(0.94 0.012 85);
+  --sidebar-accent-foreground: oklch(0.22 0.03 275);
+  --sidebar-border: oklch(0.84 0.02 85);
+  --line: oklch(0.2 0.03 275);
+  --paper: oklch(0.995 0.006 85);
+  --wash-origin: oklch(0.86 0.1 65);
+  --wash-arcs: oklch(0.82 0.09 285);
+  --wash-lab: oklch(0.86 0.08 195);
+  --wash-stats: oklch(0.84 0.1 330);
+  --wash-activity: oklch(0.86 0.1 145);
+  --wash-ask: oklch(0.85 0.09 20);
+  --wash-sidequest: oklch(0.87 0.07 240);
+  --wash-finale: oklch(0.88 0.1 85);
+  --sq-light: oklch(0.93 0.03 85);
+  --sq-dark: oklch(0.62 0.07 275);
 }
 
 @layer base {
@@ -161,7 +187,6 @@ html.light {
 
   h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.02em; }
   .font-chapter { font-family: var(--font-chapter); letter-spacing: 0.08em; }
-  .font-one-piece { font-family: var(--font-one-piece); letter-spacing: 0.08em; }
   .font-mono { font-family: var(--font-mono); }
 
   ::selection { background: var(--gold); color: var(--ink); }
@@ -342,4 +367,54 @@ html.light {
 }
 .orbit-stage:active {
   cursor: grabbing;
+}
+
+/* ---------- v5 webtoon primitives ---------- */
+:root {
+  --panel-shadow: oklch(0.08 0.02 275);
+}
+html.light {
+  --panel-shadow: var(--line);
+}
+.webtoon-panel {
+  background: var(--paper);
+  border: 2.5px solid var(--line);
+  border-radius: 0.9rem;
+  box-shadow: 6px 6px 0 var(--panel-shadow);
+}
+.speech-bubble {
+  position: relative;
+  background: var(--paper);
+  color: var(--foreground);
+  border: 2.5px solid var(--line);
+  border-radius: 1.5rem;
+  padding: 0.9rem 1.15rem;
+}
+.speech-bubble::after {
+  content: "";
+  position: absolute;
+  bottom: -14px;
+  left: 2rem;
+  width: 22px;
+  height: 16px;
+  background: var(--paper);
+  border-right: 2.5px solid var(--line);
+  border-bottom: 2.5px solid var(--line);
+  transform: skewX(35deg);
+  border-bottom-right-radius: 4px;
+}
+.speech-bubble--right::after {
+  left: auto;
+  right: 2rem;
+  transform: skewX(-35deg) scaleX(-1);
+}
+.sfx {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  -webkit-text-stroke: 1.5px var(--line);
+  paint-order: stroke fill;
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
 }

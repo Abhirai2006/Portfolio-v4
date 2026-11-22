@@ -1,0 +1,41 @@
+{
+  "routes": [
+    {
+      "path": "/",
+      "mustContain": [
+        "Abhishek Rai A"
+      ]
+    },
+    {
+      "path": "/resume",
+      "mustContain": [
+        "Abhishek Rai A"
+      ]
+    },
+    {
+      "path": "/reviews",
+      "mustContain": [
+        "Abhishek"
+      ]
+    },
+    {
+      "path": "/anime",
+      "mustContain": [
+        "anime"
+      ],
+      "settleMs": 2500
+    },
+    {
+      "path": "/projects/arthra",
+      "mustContain": [
+        "Arthra"
+      ]
+    },
+    {
+      "path": "/thank-you",
+      "mustContain": [
+        "Abhishek"
+      ]
+    }
+  ]
+}
