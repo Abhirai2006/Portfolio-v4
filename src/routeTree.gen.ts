@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AnimeRouteImport } from './routes/anime'
+import { Route as LlmsDottxtRouteImport } from './routes/llms[.]txt'
 import { Route as ResumeRouteImport } from './routes/resume'
 import { Route as ReviewsRouteImport } from './routes/reviews'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
@@ -27,6 +28,11 @@ const IndexRoute = IndexRouteImport.update({
 const AnimeRoute = AnimeRouteImport.update({
   id: '/anime',
   path: '/anime',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LlmsDottxtRoute = LlmsDottxtRouteImport.update({
+  id: '/llms.txt',
+  path: '/llms.txt',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ResumeRoute = ResumeRouteImport.update({
@@ -68,6 +74,7 @@ const ApiPublicPosterRoute = ApiPublicPosterRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/anime': typeof AnimeRoute
+  '/llms.txt': typeof LlmsDottxtRoute
   '/resume': typeof ResumeRoute
   '/reviews': typeof ReviewsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -79,6 +86,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/anime': typeof AnimeRoute
+  '/llms.txt': typeof LlmsDottxtRoute
   '/resume': typeof ResumeRoute
   '/reviews': typeof ReviewsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -91,6 +99,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/anime': typeof AnimeRoute
+  '/llms.txt': typeof LlmsDottxtRoute
   '/resume': typeof ResumeRoute
   '/reviews': typeof ReviewsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -104,6 +113,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/anime'
+    | '/llms.txt'
     | '/resume'
     | '/reviews'
     | '/sitemap.xml'
@@ -115,6 +125,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/anime'
+    | '/llms.txt'
     | '/resume'
     | '/reviews'
     | '/sitemap.xml'
@@ -126,6 +137,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/anime'
+    | '/llms.txt'
     | '/resume'
     | '/reviews'
     | '/sitemap.xml'
@@ -138,6 +150,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AnimeRoute: typeof AnimeRoute
+  LlmsDottxtRoute: typeof LlmsDottxtRoute
   ResumeRoute: typeof ResumeRoute
   ReviewsRoute: typeof ReviewsRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -161,6 +174,13 @@ declare module '@tanstack/react-router' {
       path: '/anime'
       fullPath: '/anime'
       preLoaderRoute: typeof AnimeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/llms.txt': {
+      id: '/llms.txt'
+      path: '/llms.txt'
+      fullPath: '/llms.txt'
+      preLoaderRoute: typeof LlmsDottxtRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/resume': {
@@ -218,6 +238,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AnimeRoute: AnimeRoute,
+  LlmsDottxtRoute: LlmsDottxtRoute,
   ResumeRoute: ResumeRoute,
   ReviewsRoute: ReviewsRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,

@@ -35,16 +35,17 @@ I wrote the ML and algorithm projects myself. The web side of this site was buil
 
 ## Highlights
 
+v5, "The Réti Volume": a webtoon-style strip in navy and electric blue, navigated by chess.
+
 | | |
 | --- | --- |
-| **Projects on a ring** | The Arsenal is a slowly turning 3D ring of project cards. Drag it, flick it, use the arrows or the keyboard, and click a card to open it. It respects reduced motion. |
-| **Screenshots that follow your theme** | Each project pop-up shows a dark or light screenshot to match the theme the visitor is using, and swaps when they flip the toggle. |
-| **Ask Abhishek** | A chat assistant that only knows my résumé and projects. It streams replies from the server, retries once if the model is busy, then falls back to a lighter model. |
-| **Live GitHub activity** | Recent repositories and a contribution heatmap, pulled from the GitHub API and cached for 10 minutes. If GitHub rate-limits the server, the last good copy is kept, and failing that the browser asks GitHub directly. |
-| **Anime shelf** | A scroll-driven 3D shelf of 60 titles at `/anime`, with mood-based picks, random discovery, a watch breakdown and recommendations from visitors. |
-| **Reviews and résumé** | Visitors can leave a review at `/reviews`. The résumé at `/resume` is a clean page that prints well. |
-| **Jump anywhere** | Press `Cmd/Ctrl + K` to open a command palette for chapters, case studies and contact options. |
-| **Careful with data** | Anonymous page events only, no personal data. Visitors can add reviews and recommendations but cannot edit or delete anything. |
+| **The main board** | A real 3D chess board (three.js, everything generated in code). Abhishek opens 1.Nf3; you play black, and the piece you move decides where the site takes you: knight → ML and the Churn Lab, rook → products, bishop → algorithms, pawn → skills and résumé, king → about, queen → contact. The room goes dark and a spotlight follows the move. "Back to the board" returns, and the game continues. A 2D board takes over without WebGL or with reduced motion. |
+| **Churn Lab** | The real LightGBM model from the Bluemind internship, exported to JSON and run in the browser with SHAP explanations. It matches the Python model within 0.000001 on all 1,409 test customers. Score a customer, try to save one, or move the alert threshold. |
+| **The Arcs** | Projects as webtoon episodes: main arcs (Churn, MUSE, Arthra with its Tally prequel, Ro-Bio, Earth & Ethos, a paid client project) and side stories. |
+| **The finale** | Levitsky vs Marshall, Breslau 1912: find Marshall's ...Qg3!! to open the contact section. |
+| **Ask Abhishek** | A chat assistant that only knows his résumé, projects and notes he wrote. |
+| **Live GitHub activity** | Cached for 10 minutes; if GitHub rate-limits the server, the last good copy is kept, then the browser asks GitHub directly. |
+| **Search and AI engines** | Server-rendered text, per-page titles and descriptions, ProfilePage + Person and per-project structured data, a sitemap built from the project list, `/llms.txt`, and a `robots.txt` that welcomes search and AI crawlers. |
 
 ## Preview
 
@@ -178,6 +179,15 @@ Cloudflare keeps two separate lists of variables:
 
 If the chat says "AI is not configured yet", the key is in the wrong list.
 
+## Search Console, Bing and AI engines (one-time, by hand)
+
+1. Google Search Console → the `portfolio.abhirai2006.workers.dev` property (the verification tag is already on the site) → Sitemaps → submit `sitemap.xml`.
+2. Bing Webmaster Tools → import from Search Console → submit the sitemap. Bing's index feeds ChatGPT search and Copilot.
+3. Cloudflare → this Worker → make sure no "Block AI bots" / managed robots.txt setting is on.
+4. On GitHub, set each project repo's "Website" field to its episode page (`/projects/<slug>`), and link the portfolio from the profile README and LinkedIn Featured.
+5. Keep the same facts in the same words everywhere (site, GitHub bio, LinkedIn headline).
+6. When the internship repo goes public, set `pendingRepo.isPublic` to `true` for the churn project in `src/lib/projects.ts`.
+
 ## Scripts
 
 | Command | What it does |
@@ -185,6 +195,8 @@ If the chat says "AI is not configured yet", the key is in the wrong list.
 | `bun run dev` | Starts the dev server. |
 | `bun run build` | Builds the Worker and the static files. |
 | `bun run lint` and `bun run format` | Checks and formats the code. |
+| `bun run test` | Unit tests: chess lines, the Marshall finale, the board's engine, churn model parity with Python, metrics, the save-the-customer game, project data, SEO output. |
+| `bun run smoke -- --base http://127.0.0.1:8080` | Opens every page at 4 widths in both themes and without JavaScript: no errors, no sideways scroll, no broken images, required text present, unique titles, valid structured data, the board → Lab → back flow, the finale, and a 2-page résumé print. |
 | `node scripts/capture-projects.mjs` | Takes dark and light screenshots of the live project sites into `public/media/live/`. It works out whether a site has two themes, checks brightness so they are never swapped, and hides host badges. Add `--only <name>` for one site. |
 | `node scripts/screenshots.mjs <url>` | Retakes the README images in `docs/screenshots/` from a running copy of the site. |
 | `node scripts/og-cover.mjs` | Renders the 1200×630 link-preview image into `public/media/og-cover.jpg` from the portrait and the project count. Rerun it when the numbers on it change. |

@@ -23,6 +23,8 @@ const IGNORE = [/github-contributions-api/, /api\.github\.com/, /supabase\.co/, 
 
 if (shots) mkdirSync(shots, { recursive: true });
 const failures = [];
+const seenTitles = {};
+const seenDescriptions = {};
 const fail = (msg) => failures.push(msg);
 const routes = config.routes.filter((r) => !only || r.path === only);
 
@@ -147,6 +149,25 @@ for (const route of routes) {
   await page.goto(base + route.path, { waitUntil: "domcontentloaded" });
   const html = await page.content();
   for (const s of route.mustContain ?? []) if (!html.includes(s)) fail(`${route.path} [no-JS]: missing "${s}"`);
+  // SEO: every page has its own title + description, and every JSON-LD block parses.
+  const seo = await page.evaluate(() => ({
+    title: document.title,
+    description: document.querySelector('meta[name="description"]')?.getAttribute("content") ?? "",
+    ld: [...document.querySelectorAll('script[type="application/ld+json"]')].map((s) => s.textContent ?? ""),
+  }));
+  if (!seo.title) fail(`${route.path}: no <title>`);
+  if (!seo.description) fail(`${route.path}: no meta description`);
+  for (const [other, t] of Object.entries(seenTitles)) if (t === seo.title) fail(`${route.path}: same <title> as ${other}`);
+  for (const [other, d] of Object.entries(seenDescriptions)) if (d === seo.description) fail(`${route.path}: same description as ${other}`);
+  seenTitles[route.path] = seo.title;
+  seenDescriptions[route.path] = seo.description;
+  for (const block of seo.ld) {
+    try {
+      JSON.parse(block);
+    } catch {
+      fail(`${route.path}: JSON-LD block does not parse`);
+    }
+  }
   await ctx.close();
 }
 await browser.close();

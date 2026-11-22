@@ -24,6 +24,7 @@ import { track, observeSections, recordVisit } from "@/lib/analytics";
 import portrait from "@/assets/abhishek-portrait.jpg.asset.json";
 import ogCover from "@/assets/og-cover.jpg.asset.json";
 import { SITE } from "@/lib/site";
+import { homeJsonLd } from "@/lib/seo";
 
 const TITLE = "Abhishek Rai A · Aspiring ML Engineer, Mysuru";
 const DESCRIPTION =
@@ -45,20 +46,10 @@ export const Route = createFileRoute("/")({
       { name: "twitter:image", content: `${SITE}${ogCover.url}` },
     ],
     links: [{ rel: "canonical", href: `${SITE}/` }],
-    scripts: [
-      {
-        type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "Person",
-          name: PERSON.name,
-          jobTitle: PERSON.role,
-          url: `${SITE}/`,
-          image: `${SITE}${portrait.url}`,
-          sameAs: [PERSON.github, PERSON.linkedin],
-        }),
-      },
-    ],
+    scripts: homeJsonLd(SITE, portrait.url).map((block) => ({
+      type: "application/ld+json",
+      children: JSON.stringify(block),
+    })),
   }),
   component: Index,
 });
