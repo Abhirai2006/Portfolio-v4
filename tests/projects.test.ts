@@ -92,3 +92,19 @@ describe("facts", () => {
     for (const banned of ["LPA", "CTC", "per annum", "lakh"]) expect(all).not.toContain(banned);
   });
 });
+
+describe("screenshots", () => {
+  test("every screenshot a project points to exists in public/ (first candidate, no load-error fallback needed)", async () => {
+    const { existsSync } = await import("node:fs");
+    const { shotCandidates } = await import("@/lib/shots");
+    for (const p of PROJECTS) {
+      for (const shot of p.images ?? []) {
+        for (const light of [false, true]) {
+          const first = shotCandidates(shot, light)[0];
+          const onDisk = first.startsWith("/media/") ? existsSync(`public${first}`) : true;
+          expect({ project: p.slug, first, onDisk }).toEqual({ project: p.slug, first, onDisk: true });
+        }
+      }
+    }
+  });
+});

@@ -11,12 +11,17 @@ import bs3 from "@/assets/projects/bs-3.png.asset.json";
 
 // Live-site captures made by scripts/capture-projects.mjs. A site with a dark and a light theme gets
 // both files, and the visitor sees the one that matches their theme. `fallback` is used if neither exists.
-const liveShot = (slug: string, n: number, fallback?: string): Shot => ({
-  dark: `/media/live/${slug}-${n}-dark.jpg`,
-  light: `/media/live/${slug}-${n}-light.jpg`,
-  any: `/media/live/${slug}-${n}.jpg`,
-  ...(fallback ? { fallback } : {}),
-});
+// Projects whose live sites have both themes were captured twice (dark + light); the rest once.
+// Only list files that exist: a missing first candidate breaks before React can swap it (no hydration yet).
+const THEMED = new Set(["muse", "arthra"]);
+const liveShot = (slug: string, n: number, fallback?: string): Shot =>
+  THEMED.has(slug)
+    ? {
+        dark: `/media/live/${slug}-${n}-dark.jpg`,
+        light: `/media/live/${slug}-${n}-light.jpg`,
+        ...(fallback ? { fallback } : {}),
+      }
+    : `/media/live/${slug}-${n}.jpg`;
 
 export type Metric = { value: string; label: string };
 

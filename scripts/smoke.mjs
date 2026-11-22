@@ -48,6 +48,10 @@ for (const route of routes) {
       await page.waitForTimeout(route.settleMs ?? 1500);
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
       if (overflow > 0) fail(`${tag}: sideways scroll of ${overflow}px`);
+      const broken = await page.evaluate(() =>
+        [...document.images].filter((i) => i.complete && i.naturalWidth === 0 && i.src).map((i) => i.src),
+      );
+      for (const src of broken) if (!/kitsu|githubusercontent|supabase/.test(src)) fail(`${tag}: broken image ${src}`);
       const text = await page.evaluate(() => document.body.innerText + " " + document.documentElement.innerHTML);
       for (const s of [...(route.mustContain ?? []), ...(route.mustContainJsOnly ?? [])]) {
         if (!text.includes(s)) fail(`${tag}: missing "${s}"`);

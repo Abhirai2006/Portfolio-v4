@@ -64,7 +64,7 @@ export function EpisodeCover({
               </div>
             )}
             <span className="absolute left-3 top-3 rounded-full border-2 border-line bg-paper px-2.5 py-0.5 font-mono text-[11px] font-bold uppercase tracking-widest">
-              Ep. {episode}
+              {`Ep. ${episode}`}
             </span>
             {project.client && (
               <span className="absolute right-3 top-3 rounded-full border-2 border-line bg-primary px-2.5 py-0.5 font-mono text-[11px] font-bold uppercase tracking-widest text-primary-foreground">
@@ -79,7 +79,7 @@ export function EpisodeCover({
               {meta.piece}
             </span>
             <span>{meta.label}</span>
-            {size === "sm" && <span>· Ep. {episode}</span>}
+            {size === "sm" && <span>{`· Ep. ${episode}`}</span>}
           </div>
           <h3 className={cn("mt-2 font-display font-extrabold leading-tight", size === "lg" ? "text-2xl" : "text-lg")}>
             {project.title}
