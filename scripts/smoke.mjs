@@ -60,8 +60,12 @@ for (const route of routes) {
         // The chess must never lock the page: scrolling works at once, and Tab reaches the skip link fast.
         await page.evaluate(() => window.scrollTo(0, 0));
         await page.mouse.wheel(0, 1200);
-        await page.waitForTimeout(400);
-        if ((await page.evaluate(() => window.scrollY)) < 200) fail(`${tag}: page did not scroll right after load`);
+        // Polled: the software WebGL in CI delays frames; on a GPU this is instant.
+        const scrolled = await page
+          .waitForFunction(() => window.scrollY >= 200, null, { timeout: 2000 })
+          .then(() => true)
+          .catch(() => false);
+        if (!scrolled) fail(`${tag}: page did not scroll right after load`);
         await page.evaluate(() => window.scrollTo(0, 0));
         await page.evaluate(() => document.activeElement && document.activeElement.blur && document.activeElement.blur());
         let reached = false;
@@ -91,7 +95,17 @@ for (const route of routes) {
         const main = page.locator("#board");
         await main.getByRole("button", { name: "g8, black knight" }).click();
         await main.getByRole("button", { name: "f6", exact: true }).click();
-        await page.waitForTimeout(3800);
+        // Lights out: the dark layer must cover the page while the piece moves (polled: software WebGL is slow).
+        const wentDark = await page
+          .waitForFunction(
+            () => Number(getComputedStyle(document.querySelector("#board > div[aria-hidden]")).opacity) > 0.5,
+            null,
+            { timeout: 4000 },
+          )
+          .then(() => true)
+          .catch(() => false);
+        if (!wentDark) fail(`${tag}: the room did not go dark during the move`);
+        await page.waitForFunction(() => Math.abs(document.getElementById("lab").getBoundingClientRect().top) < 220, null, { timeout: 9000 }).catch(() => {});
         const atLab = await page.evaluate(() => Math.abs(document.getElementById("lab").getBoundingClientRect().top) < 220);
         if (!atLab) fail(`${tag}: knight move did not travel to the Churn Lab`);
         await page.getByRole("button", { name: /Back to the board/ }).click();

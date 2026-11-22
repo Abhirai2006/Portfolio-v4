@@ -250,15 +250,83 @@ function Targets({ squares, onDrop }: { squares: string[]; onDrop: (sq: string) 
   );
 }
 
+/**
+ * Room lighting. When `dramatic` is on (a piece is moving) the room goes dark: ambient, key light and
+ * reflections fade out while a spotlight drops onto the square the piece lands on.
+ */
+function Lights({ dramatic, focus }: { dramatic: boolean; focus?: string }) {
+  const { scene } = useThree();
+  const hemi = useRef<THREE.HemisphereLight>(null);
+  const key = useRef<THREE.DirectionalLight>(null);
+  const spot = useRef<THREE.SpotLight>(null);
+  const target = useMemo(() => new THREE.Object3D(), []);
+  useEffect(() => {
+    scene.add(target);
+    return () => {
+      scene.remove(target);
+    };
+  }, [scene, target]);
+  useFrame((_, dt) => {
+    const k = Math.min(1, dt * 4);
+    const lerp = (v: number, to: number) => v + (to - v) * k;
+    if (hemi.current) hemi.current.intensity = lerp(hemi.current.intensity, dramatic ? 0.02 : 0.35);
+    if (key.current) key.current.intensity = lerp(key.current.intensity, dramatic ? 0.08 : 2.2);
+    scene.environmentIntensity = lerp(scene.environmentIntensity ?? 1, dramatic ? 0.05 : 1);
+    if (spot.current) {
+      spot.current.intensity = lerp(spot.current.intensity, dramatic ? 90 : 0);
+      if (focus) {
+        const [x, z] = sqToXZ(focus);
+        spot.current.position.x = lerp(spot.current.position.x, x * 0.6);
+        spot.current.position.z = lerp(spot.current.position.z, z * 0.6 + 1);
+        target.position.x = lerp(target.position.x, x);
+        target.position.z = lerp(target.position.z, z);
+      }
+    }
+  });
+  return (
+    <>
+      <hemisphereLight ref={hemi} args={["#cfe0ff", "#0b1430", 0.35]} />
+      <directionalLight
+        ref={key}
+        position={[4, 9, 6]}
+        intensity={2.2}
+        castShadow
+        shadow-mapSize={[1024, 1024]}
+        shadow-camera-left={-6}
+        shadow-camera-right={6}
+        shadow-camera-top={6}
+        shadow-camera-bottom={-6}
+        shadow-bias={-0.0004}
+      />
+      <spotLight
+        ref={spot}
+        position={[0, 7, 1]}
+        target={target}
+        intensity={0}
+        angle={0.28}
+        penumbra={0.65}
+        decay={1.6}
+        distance={16}
+        color="#d6e6ff"
+        castShadow
+        shadow-mapSize={[1024, 1024]}
+        shadow-bias={-0.0004}
+      />
+    </>
+  );
+}
+
 function Scene({
   fen,
   last,
   canPlay,
+  dramatic,
   onMove,
 }: {
   fen: string;
   last: string[];
   canPlay: boolean;
+  dramatic: boolean;
   onMove: (from: Square, to: Square) => void;
 }) {
   useEnvironment();
@@ -302,18 +370,7 @@ function Scene({
 
   return (
     <>
-      <hemisphereLight args={["#cfe0ff", "#0b1430", 0.35]} />
-      <directionalLight
-        position={[4, 9, 6]}
-        intensity={2.2}
-        castShadow
-        shadow-mapSize={[1024, 1024]}
-        shadow-camera-left={-6}
-        shadow-camera-right={6}
-        shadow-camera-top={6}
-        shadow-camera-bottom={-6}
-        shadow-bias={-0.0004}
-      />
+      <Lights dramatic={dramatic} focus={last[1]} />
       <BoardMesh last={last} />
       {pieces.map((p) => (
         <Piece
@@ -343,6 +400,7 @@ export default function Board3D(props: {
   fen: string;
   last: string[];
   canPlay: boolean;
+  dramatic: boolean;
   onMove: (from: Square, to: Square) => void;
 }) {
   const wrap = useRef<HTMLDivElement>(null);

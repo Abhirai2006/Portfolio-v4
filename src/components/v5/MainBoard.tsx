@@ -20,6 +20,8 @@ export type Destination = { chapter: string; filter?: Kind };
 function useBoardGame(onTravel: (d: Destination) => void) {
   const [state, setState] = useState<Saved>({ fen: START_FEN, last: ["g1", "f3"], moves: ["Nf3"] });
   const [busy, setBusy] = useState(false);
+  /** Lights out: true from the visitor's move until just before the page travels. */
+  const [dramatic, setDramatic] = useState(false);
   const [msg, setMsg] = useState("Abhishek opened 1.Nf3. Your move: the piece you move decides where you go.");
   const timers = useRef<number[]>([]);
 
@@ -57,6 +59,7 @@ function useBoardGame(onTravel: (d: Destination) => void) {
       }
       const dest = DESTINATIONS[r.piece];
       setBusy(true);
+      setDramatic(true);
       const afterVisitor = { fen: r.fen, last: [r.from, r.to], moves: [...state.moves, r.san] };
       save(afterVisitor);
       setMsg(`${r.san}: your ${r.piece === "n" ? "knight" : r.piece === "p" ? "pawn" : r.piece === "b" ? "bishop" : r.piece === "r" ? "rook" : r.piece === "q" ? "queen" : "king"} heads to ${dest.label}.`);
@@ -78,12 +81,13 @@ function useBoardGame(onTravel: (d: Destination) => void) {
               : `Abhishek answered ${reply}. Come back with "Back to the board" and play on.`,
           );
           timers.current.push(
+            window.setTimeout(() => setDramatic(false), 900),
             window.setTimeout(() => {
               setBusy(false);
               onTravel({ chapter: dest.chapter, filter: dest.filter });
-            }, 550),
+            }, 1350),
           );
-        }, 500),
+        }, 1100),
       );
     },
     [busy, state, onTravel],
@@ -94,7 +98,7 @@ function useBoardGame(onTravel: (d: Destination) => void) {
     setMsg("New game. Abhishek opened 1.Nf3 again. Your move.");
   };
 
-  return { ...state, busy, msg, move, reset, over: new Chess(state.fen).isGameOver() };
+  return { ...state, busy, dramatic, msg, move, reset, over: new Chess(state.fen).isGameOver() };
 }
 
 function canUse3D() {
@@ -126,16 +130,35 @@ export function MainBoard({ onTravel }: { onTravel: (d: Destination) => void }) 
   }, []);
 
   const show3D = three && !prefer2D;
+  // Keep the board lifted above the dark layer until that layer has finished fading out,
+  // otherwise the board is covered for the length of the fade.
+  const [lifted, setLifted] = useState(false);
+  useEffect(() => {
+    if (game.dramatic) {
+      setLifted(true);
+      return;
+    }
+    const t = window.setTimeout(() => setLifted(false), 800);
+    return () => window.clearTimeout(t);
+  }, [game.dramatic]);
   const canPlay = !game.busy && !game.over;
 
   return (
     <div id="board" className="scroll-mt-24">
+      {/* Lights out: the whole page goes dark while a piece moves; only the board stays lit. */}
+      <div
+        aria-hidden="true"
+        className={cn(
+          "pointer-events-none fixed inset-0 z-[60] bg-[radial-gradient(ellipse_at_center,rgba(2,6,18,0.82),rgba(0,0,0,0.96))] transition-opacity duration-700",
+          game.dramatic ? "opacity-100" : "opacity-0",
+        )}
+      />
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_17rem]">
-        <div className="relative">
+        <div className={cn("relative", lifted && "z-[61]")}>
           <div className="relative aspect-square w-full overflow-hidden rounded-2xl sm:aspect-[5/4] border-2 border-line bg-[radial-gradient(circle_at_50%_30%,color-mix(in_oklab,var(--primary)_22%,var(--paper)),var(--background)_75%)] shadow-[6px_6px_0_var(--panel-shadow)]">
             {show3D ? (
               <Suspense fallback={<Flat game={game} canPlay={canPlay} />}>
-                <Board3D fen={game.fen} last={game.last} canPlay={canPlay} onMove={game.move} />
+                <Board3D fen={game.fen} last={game.last} canPlay={canPlay} dramatic={game.dramatic} onMove={game.move} />
               </Suspense>
             ) : (
               <Flat game={game} canPlay={canPlay} />
