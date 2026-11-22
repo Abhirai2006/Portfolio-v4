@@ -1,39 +1,10 @@
 import { describe, expect, test } from "bun:test";
 import { Chess } from "chess.js";
-import { CHAPTERS, ENTRANCE, REPLY_LINES, positionAt, type Reply } from "@/lib/chess/lines";
+import { CHAPTERS } from "@/lib/chess/lines";
 import { MARSHALL, checkFinaleMove } from "@/lib/chess/marshall";
 
-const REPLIES = Object.keys(REPLY_LINES) as Reply[];
-
-describe("reply lines", () => {
-  test("there are exactly the four planned replies", () => {
-    expect([...REPLIES].sort()).toEqual(["Nf6", "c5", "d5", "g6"]);
-  });
-
-  test.each(REPLIES)("%s line is legal and starts 1.Nf3 + reply", (reply) => {
-    const { moves } = REPLY_LINES[reply];
-    expect(moves[0]).toBe(ENTRANCE);
-    expect(moves[1]).toBe(reply);
-    const game = new Chess();
-    for (const san of moves) expect(() => game.move(san)).not.toThrow();
-  });
-
-  test.each(REPLIES)("%s line maps every chapter before the finale, in homepage order", (reply) => {
-    const { moves, chapterAtPly } = REPLY_LINES[reply];
-    const plies = CHAPTERS.filter((c) => c !== "finale").map(
-      (c) => chapterAtPly[c as Exclude<typeof c, "finale">],
-    );
-    for (const p of plies) expect(p).toBeGreaterThanOrEqual(1);
-    for (let i = 1; i < plies.length; i++) expect(plies[i]).toBeGreaterThan(plies[i - 1]);
-    expect(plies[plies.length - 1]).toBeLessThanOrEqual(moves.length);
-  });
-
-  test("positionAt replays the line up to a ply", () => {
-    const game = new Chess();
-    game.move("Nf3");
-    game.move("d5");
-    expect(positionAt("d5", 2)).toBe(game.fen());
-  });
+test("homepage chapters in order", () => {
+  expect([...CHAPTERS]).toEqual(["origin", "arcs", "lab", "stats", "activity", "ask", "sidequest", "finale"]);
 });
 
 describe("Levitsky vs Marshall, Breslau 1912", () => {

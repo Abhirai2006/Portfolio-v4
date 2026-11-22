@@ -76,16 +76,31 @@ for (const route of routes) {
         if (!/\d+%/.test(lab)) fail(`${tag}: Churn Lab shows no probability`);
       }
       if (route.chessCheck && theme === "dark" && width === 1280) {
-        // A reply plays on the board and takes you to its chapter; the finale solves by clicking c3 then g3.
+        // Main board: a knight move travels to the Churn Lab; "Back to the board" returns; the finale solves c3→g3.
         await page.evaluate(() => window.scrollTo(0, 0));
-        await page.getByRole("button", { name: /Nf6/ }).first().click();
-        await page.waitForTimeout(2200);
-        const near = await page.evaluate(() => Math.abs(document.getElementById("origin").getBoundingClientRect().top) < 200);
-        if (!near) fail(`${tag}: reply 1…Nf6 did not take the visitor to Origin`);
+        // Wait for the 3D board (if WebGL works), switch it to 2D, then play 1...Nf6 on the main board.
+        const hasCanvas = await page
+          .waitForSelector("#board canvas", { timeout: 8000 })
+          .then(() => true)
+          .catch(() => false);
+        if (hasCanvas) await page.locator("#board").getByRole("button", { name: "2D board" }).click();
+        const main = page.locator("#board");
+        await main.getByRole("button", { name: "g8, black knight" }).click();
+        await main.getByRole("button", { name: "f6", exact: true }).click();
+        await page.waitForTimeout(3800);
+        const atLab = await page.evaluate(() => Math.abs(document.getElementById("lab").getBoundingClientRect().top) < 220);
+        if (!atLab) fail(`${tag}: knight move did not travel to the Churn Lab`);
+        await page.getByRole("button", { name: /Back to the board/ }).click();
+        await page.waitForTimeout(1500);
+        const atBoard = await page.evaluate(() => Math.abs(document.getElementById("board").getBoundingClientRect().top) < 220);
+        if (!atBoard) fail(`${tag}: "Back to the board" did not return to the board`);
+        const moves = await page.evaluate(() => document.getElementById("board").innerText);
+        if (!/1\.Nf3 Nf6 2\./.test(moves)) fail(`${tag}: white did not answer the knight move`);
         await page.evaluate(() => document.getElementById("finale").scrollIntoView());
         await page.waitForTimeout(600);
-        await page.getByRole("button", { name: "c3, black queen" }).click();
-        await page.getByRole("button", { name: "g3" }).click();
+        const fin0 = page.locator("#finale");
+        await fin0.getByRole("button", { name: "c3, black queen" }).click();
+        await fin0.getByRole("button", { name: "g3", exact: true }).click();
         await page.waitForTimeout(500);
         const fin = await page.evaluate(() => document.getElementById("finale").innerText);
         if (!fin.includes("Qg3!!")) fail(`${tag}: playing c3→g3 did not solve the finale`);

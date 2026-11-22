@@ -146,8 +146,14 @@ const FILTERS: { id: Kind | "all"; label: string }[] = [
   { id: "practice", label: `${KIND_META.practice.piece} Practice` },
 ];
 
-export function Arcs() {
-  const [filter, setFilter] = useState<Kind | "all">("all");
+export function Arcs({
+  filter,
+  onFilter,
+}: {
+  filter: Kind | "all";
+  onFilter: (f: Kind | "all") => void;
+}) {
+  const setFilter = onFilter;
   const show = (k: Kind) => filter === "all" || filter === k;
   const main = MAIN_ARCS.filter((p) => show(p.kind));
   const side = SIDE_STORIES.filter((p) => show(p.kind));

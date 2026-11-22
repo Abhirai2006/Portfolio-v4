@@ -2,8 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { Nav } from "@/components/portfolio/Nav";
 import { CommandPalette } from "@/components/portfolio/CommandPalette";
-import { Entrance } from "@/components/v5/Entrance";
-import { DockedBoard } from "@/components/v5/DockedBoard";
+import { BackToBoard, MainBoard, type Destination } from "@/components/v5/MainBoard";
 import { Finale } from "@/components/v5/Finale";
 import {
   Arcs,
@@ -16,7 +15,8 @@ import {
   StatSheet,
 } from "@/components/v5/sections";
 import { Panel, SpeedLines } from "@/components/art/primitives";
-import { CHAPTERS, REPLY_LINES, moveText, type ChapterId, type Reply } from "@/lib/chess/lines";
+import { CHAPTERS } from "@/lib/chess/lines";
+import type { Kind } from "@/lib/projects";
 import { CONTACT_EMAIL, mailto } from "@/lib/contact";
 import { PERSON } from "@/lib/facts";
 import { MAIN_ARCS } from "@/lib/projects";
@@ -63,40 +63,6 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const DEFAULT_REPLY: Reply = "d5";
-
-/** Which chapter is on screen right now (null while the hero is in view). */
-function useActiveChapter() {
-  const [active, setActive] = useState<ChapterId | null>(null);
-  useEffect(() => {
-    const visible = new Map<string, number>();
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const e of entries) visible.set(e.target.id, e.isIntersecting ? e.intersectionRatio : 0);
-        const hero = visible.get("top-hero") ?? 0;
-        if (hero > 0.25) return setActive(null);
-        let best: ChapterId | null = null;
-        let bestR = 0;
-        for (const id of CHAPTERS) {
-          const r = visible.get(id) ?? 0;
-          if (r > bestR) {
-            bestR = r;
-            best = id;
-          }
-        }
-        if (best) setActive(best);
-      },
-      { threshold: [0, 0.1, 0.25, 0.5, 0.75] },
-    );
-    for (const id of ["top-hero", ...CHAPTERS]) {
-      const el = document.getElementById(id);
-      if (el) io.observe(el);
-    }
-    return () => io.disconnect();
-  }, []);
-  return active;
-}
-
 function scrollToId(id: string) {
   const el = document.getElementById(id);
   if (!el) return;
@@ -106,15 +72,8 @@ function scrollToId(id: string) {
 
 function Index() {
   const [visitorCount, setVisitorCount] = useState<number | null>(null);
-  const [reply, setReply] = useState<Reply | null>(null);
   const [solved, setSolved] = useState(false);
-  const active = useActiveChapter();
-  const line = reply ?? DEFAULT_REPLY;
-  const moveAt = (c: ChapterId) =>
-    moveText(line, c === "finale" ? REPLY_LINES[line].moves.length : REPLY_LINES[line].chapterAtPly[c])
-      .split(" ")
-      .slice(-2)
-      .join(" ");
+  const [arcsFilter, setArcsFilter] = useState<Kind | "all">("all");
 
   useEffect(() => {
     track("page_view", "home");
@@ -122,10 +81,10 @@ function Index() {
     return observeSections([...CHAPTERS, "contact"]);
   }, []);
 
-  const onReply = useCallback((r: Reply) => {
-    setReply(r);
-    track("cta_click", `reply_${r}`);
-    window.setTimeout(() => scrollToId(REPLY_LINES[r].firstChapter), 900);
+  const onTravel = useCallback((d: Destination) => {
+    if (d.chapter === "arcs") setArcsFilter(d.filter ?? "all");
+    // Let the filter render before scrolling so the page lands on the right cards.
+    window.setTimeout(() => scrollToId(d.chapter), 30);
   }, []);
 
   return (
@@ -138,81 +97,87 @@ function Index() {
       </a>
       <Nav />
 
-      {/* ---------- Hero + opening move ---------- */}
+      {/* ---------- Hero + the main board ---------- */}
       <header id="top-hero" className="relative overflow-hidden pt-24 sm:pt-28">
-        <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 pb-16 sm:px-6 lg:grid-cols-[1.25fr_1fr]">
-          <div>
-            <p className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">
-              Portfolio · {PERSON.city}, India
-            </p>
-            <h1 className="mt-4 font-display text-5xl font-extrabold leading-[0.95] tracking-tight sm:text-7xl">
-              {PERSON.name}
-            </h1>
-            <p className="mt-5 max-w-xl text-lg text-muted-foreground">
-              <span className="font-semibold text-foreground">Aspiring Machine Learning Engineer</span> · looking for ML
-              internships. B.E. AI &amp; ML at Mysore University, GPA {PERSON.gpa}. His internship churn model runs live
-              on this page.
-            </p>
-            <ul className="mt-6 flex flex-wrap gap-2 text-sm">
-              {["B.E. AI & ML · GPA 9.44", "Bluemind Solutions intern, 2026", `${MAIN_ARCS.length} main arcs · 1 paid client`].map(
-                (c) => (
-                  <li key={c} className="rounded-full border-2 border-line bg-paper px-3 py-1">
-                    {c}
-                  </li>
-                ),
-              )}
-            </ul>
-            <div className="mt-8 flex flex-wrap items-center gap-3">
-              <a
-                href={mailto("internship")}
-                onClick={() => track("cta_click", "hire_hero")}
-                className="rounded-full border-2 border-line bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground shadow-[4px_4px_0_var(--panel-shadow)] transition hover:-translate-y-0.5"
-              >
-                Hire me for an internship →
-              </a>
-              <Link
-                to="/resume"
-                onClick={() => track("cta_click", "resume")}
-                className="rounded-full border-2 border-line bg-paper px-5 py-2.5 text-sm font-semibold transition hover:-translate-y-0.5"
-              >
-                Résumé
-              </Link>
-              <a
-                href="#arcs"
-                onClick={() => track("cta_click", "skip_to_work")}
-                className="font-mono text-sm font-bold uppercase tracking-widest text-primary underline-offset-4 hover:underline"
-              >
-                Skip to the work →
-              </a>
+        <div className="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
+          <div className="grid items-end gap-8 lg:grid-cols-[1.3fr_1fr]">
+            <div>
+              <p className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">
+                Portfolio · {PERSON.city}, India
+              </p>
+              <h1 className="mt-4 font-display text-5xl font-extrabold leading-[0.95] tracking-tight sm:text-7xl">
+                {PERSON.name}
+              </h1>
+              <p className="mt-5 max-w-xl text-lg text-muted-foreground">
+                <span className="font-semibold text-foreground">Aspiring Machine Learning Engineer</span> · looking for ML
+                internships. B.E. AI &amp; ML at Mysore University, GPA {PERSON.gpa}. His internship churn model runs live
+                on this page.
+              </p>
             </div>
-            <p className="mt-6 font-mono text-xs text-muted-foreground" aria-live="polite">
-              {visitorCount === null ? "" : `${visitorCount.toLocaleString()} visitors so far`}
-            </p>
+            <div>
+              <ul className="flex flex-wrap gap-2 text-sm">
+                {["B.E. AI & ML · GPA 9.44", "Bluemind Solutions intern, 2026", `${MAIN_ARCS.length} main arcs · 1 paid client`].map(
+                  (c) => (
+                    <li key={c} className="rounded-full border-2 border-line bg-paper px-3 py-1">
+                      {c}
+                    </li>
+                  ),
+                )}
+              </ul>
+              <div className="mt-6 flex flex-wrap items-center gap-3">
+                <a
+                  href={mailto("internship")}
+                  onClick={() => track("cta_click", "hire_hero")}
+                  className="rounded-full border-2 border-line bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground shadow-[4px_4px_0_var(--panel-shadow)] transition hover:-translate-y-0.5"
+                >
+                  Hire me for an internship →
+                </a>
+                <Link
+                  to="/resume"
+                  onClick={() => track("cta_click", "resume")}
+                  className="rounded-full border-2 border-line bg-paper px-5 py-2.5 text-sm font-semibold transition hover:-translate-y-0.5"
+                >
+                  Résumé
+                </Link>
+                <a
+                  href="#arcs"
+                  onClick={() => track("cta_click", "skip_to_work")}
+                  className="font-mono text-sm font-bold uppercase tracking-widest text-primary underline-offset-4 hover:underline"
+                >
+                  Skip to the work →
+                </a>
+              </div>
+              <p className="mt-4 font-mono text-xs text-muted-foreground" aria-live="polite">
+                {visitorCount === null ? "" : `${visitorCount.toLocaleString()} visitors so far`}
+              </p>
+            </div>
           </div>
-          <Entrance reply={reply} onReply={onReply} />
+          <div className="mt-12">
+            <MainBoard onTravel={onTravel} />
+          </div>
         </div>
       </header>
 
       <main>
-        <Chapter id="origin" n={1} move={moveAt("origin")}>
+        <Chapter id="origin" n={1} move="♚">
           <Origin />
         </Chapter>
-        <Chapter id="arcs" n={2} move={moveAt("arcs")}>
-          <Arcs />
+        <Chapter id="arcs" n={2} move="♜ ♝">
+          <Arcs filter={arcsFilter} onFilter={setArcsFilter} />
         </Chapter>
-        <Chapter id="lab" n={3} move={moveAt("lab")}>
+        <Chapter id="lab" n={3} move="♞">
           <LabChapter />
         </Chapter>
-        <Chapter id="stats" n={4} move={moveAt("stats")}>
+        <Chapter id="stats" n={4} move="♟">
           <StatSheet />
         </Chapter>
-        <Chapter id="activity" n={5} move={moveAt("activity")}>
+        <Chapter id="activity" n={5}>
           <LiveActivity />
         </Chapter>
-        <Chapter id="ask" n={6} move={moveAt("ask")}>
+        <Chapter id="ask" n={6}>
           <AskPanel />
         </Chapter>
-        <Chapter id="sidequest" n={7} move={moveAt("sidequest")}>
+        <Chapter id="sidequest" n={7}>
           <SideQuest />
         </Chapter>
         <Chapter id="finale" n={8}>
@@ -231,11 +196,11 @@ function Index() {
           <div>
             © {new Date().getFullYear()} · {PERSON.name} · Portfolio v5, "The Réti Volume"
           </div>
-          <div>Drawn in code · chess.js · his LightGBM model, in your browser</div>
+          <div>Drawn in code · three.js board · his LightGBM model, in your browser</div>
         </div>
       </footer>
 
-      <DockedBoard reply={line} active={active} onJump={scrollToId} />
+      <BackToBoard />
       <CommandPalette />
     </div>
   );
