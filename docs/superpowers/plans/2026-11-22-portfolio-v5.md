@@ -221,3 +221,14 @@ scripts/smoke.mjs                                         Playwright route check
 
 - [ ] **Step 1:** `bun test`, `npx tsc --noEmit`, `bun run build`, `bun run smoke` all PASS; secret scan of `.output` (same patterns as the v4 check: `AIza…`, `ghp_…`, `github_pat_…`, `sk-…`, private keys) finds nothing; `GITHUB_TOKEN`/`AI_API_KEY` absent from `.output/public`.
 - [ ] **Step 2:** `git archive --format=zip --prefix=portfolio-v4/ -o portfolio-v5.zip v5-redesign` (repo root, excluded locally via `.git/info/exclude`); send it with spec §11.5 delivery steps, the manual follow-ups (flip `pendingRepo.isPublic`; Search Console + Bing submissions) and screenshots of `/` at 390 and 1280 px in both themes.
+
+### Task 8b: Main 3D board (spec §12)
+
+**Files:** Create `src/lib/chess/play.ts`, `tests/chess-play.test.ts`, `src/components/v5/MainBoard.tsx` (2D + legend + logic hook), `src/components/v5/Board3D.tsx` (lazy three.js scene), `src/components/v5/BackToBoard.tsx`. Delete `src/components/v5/{Entrance,DockedBoard}.tsx`; remove `REPLY_LINES`/`positionAt`/`moveText` from `lines.ts` and their tests. Modify `src/routes/index.tsx`, `src/components/v5/sections.tsx` (Arcs takes a controlled filter).
+
+**Interfaces:** `DESTINATIONS: Record<PieceType, { chapter: ChapterId | "contact"; label: string; filter?: Kind }>`; `START_FEN` (after 1.Nf3); `whiteReply(fen): string | null` (legal SAN; prefers mate, then the most valuable capture, then check, then development; deterministic); `applyVisitorMove(fen, from, to): { fen; san; piece } | null`.
+
+- [ ] Failing tests: mapping is exactly the six in spec §12; `START_FEN` is after 1.Nf3 with black to move; `whiteReply` returns a legal move for 50 random-but-seeded positions, takes a hanging queen, returns null when the game is over; `applyVisitorMove` rejects illegal moves and white moves.
+- [ ] Implement; tests pass.
+- [ ] UI: 3D board (lathe-turned pieces, knight extruded from the ChessPiece outline, clearcoat materials, soft shadows, procedural room lighting, no network assets), pick → targets → move animation → white reply → travel; 2D fallback; legend links; Back-to-board button; sessionStorage game.
+- [ ] Smoke: `/` mustContain "Back to the board"-free SSR? No: mustContain the legend labels; chessCheck plays a knight move on the 2D/3D board via the legend-independent API and expects arrival at `#lab`.

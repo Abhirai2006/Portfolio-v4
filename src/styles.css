@@ -66,60 +66,60 @@
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
-/* Portfolio v5 "The Réti Volume": webtoon night ink (dark) and paper (light) */
+/* Portfolio v5 "The Réti Volume": navy and electric blue with white and black (Abhishek's palette) */
 :root {
   --radius: 0.75rem;
-  --background: oklch(0.16 0.025 275);
-  --foreground: oklch(0.95 0.02 85);
-  --ink: oklch(0.12 0.02 275);
-  --card: oklch(0.2 0.03 275);
-  --card-foreground: oklch(0.95 0.02 85);
-  --popover: oklch(0.2 0.03 275);
-  --popover-foreground: oklch(0.95 0.02 85);
-  --primary: oklch(0.8 0.15 70);
-  --primary-foreground: oklch(0.16 0.025 275);
-  --secondary: oklch(0.24 0.03 275);
-  --secondary-foreground: oklch(0.95 0.02 85);
-  --muted: oklch(0.22 0.025 275);
-  --muted-foreground: oklch(0.76 0.02 85);
-  --accent: oklch(0.8 0.12 200);
-  --accent-foreground: oklch(0.16 0.025 275);
-  --destructive: oklch(0.66 0.21 25);
-  --destructive-foreground: oklch(0.98 0.01 85);
-  --border: oklch(0.34 0.03 275);
-  --input: oklch(0.26 0.03 275);
-  --ring: oklch(0.8 0.15 70);
-  --gold: oklch(0.8 0.15 70);
-  --gold-soft: oklch(0.86 0.1 75);
-  --grad-from: oklch(0.97 0.02 85);
-  --grad-to: oklch(0.8 0.15 70);
-  --chart-1: oklch(0.8 0.15 70);
-  --chart-2: oklch(0.8 0.12 200);
-  --chart-3: oklch(0.66 0.21 25);
-  --chart-4: oklch(0.95 0.02 85);
-  --chart-5: oklch(0.7 0.16 290);
-  --sidebar: oklch(0.18 0.03 275);
-  --sidebar-foreground: oklch(0.95 0.02 85);
-  --sidebar-primary: oklch(0.8 0.15 70);
-  --sidebar-primary-foreground: oklch(0.16 0.025 275);
-  --sidebar-accent: oklch(0.24 0.03 275);
-  --sidebar-accent-foreground: oklch(0.95 0.02 85);
-  --sidebar-border: oklch(0.34 0.03 275);
-  --sidebar-ring: oklch(0.8 0.15 70);
-  /* webtoon */
-  --line: oklch(0.93 0.02 85);
-  --paper: oklch(0.2 0.03 275);
+  --background: oklch(0.13 0.02 252);
+  --foreground: oklch(0.97 0.005 250);
+  --ink: oklch(0.08 0.02 252);
+  --card: oklch(0.17 0.025 252);
+  --card-foreground: oklch(0.97 0.005 250);
+  --popover: oklch(0.17 0.025 252);
+  --popover-foreground: oklch(0.97 0.005 250);
+  --primary: oklch(0.7 0.17 242);
+  --primary-foreground: oklch(0.1 0.02 252);
+  --secondary: oklch(0.21 0.03 252);
+  --secondary-foreground: oklch(0.97 0.005 250);
+  --muted: oklch(0.2 0.025 252);
+  --muted-foreground: oklch(0.72 0.03 250);
+  --accent: oklch(0.83 0.1 228);
+  --accent-foreground: oklch(0.1 0.02 252);
+  --destructive: oklch(0.65 0.22 25);
+  --destructive-foreground: oklch(0.98 0.005 250);
+  --border: oklch(0.3 0.04 252);
+  --input: oklch(0.22 0.03 252);
+  --ring: oklch(0.7 0.17 242);
+  --gold: oklch(0.7 0.17 242);
+  --gold-soft: oklch(0.82 0.12 236);
+  --grad-from: oklch(0.97 0.005 250);
+  --grad-to: oklch(0.7 0.17 242);
+  --chart-1: oklch(0.7 0.17 242);
+  --chart-2: oklch(0.83 0.1 228);
+  --chart-3: oklch(0.65 0.22 25);
+  --chart-4: oklch(0.97 0.005 250);
+  --chart-5: oklch(0.55 0.15 265);
+  --sidebar: oklch(0.15 0.025 252);
+  --sidebar-foreground: oklch(0.97 0.005 250);
+  --sidebar-primary: oklch(0.7 0.17 242);
+  --sidebar-primary-foreground: oklch(0.1 0.02 252);
+  --sidebar-accent: oklch(0.21 0.03 252);
+  --sidebar-accent-foreground: oklch(0.97 0.005 250);
+  --sidebar-border: oklch(0.3 0.04 252);
+  --sidebar-ring: oklch(0.7 0.17 242);
+  /* webtoon: every wash is a blue tint, outlines are white on navy */
+  --line: oklch(0.94 0.01 250);
+  --paper: oklch(0.17 0.025 252);
   --gutter: clamp(0.75rem, 2.5vw, 1.25rem);
-  --wash-origin: oklch(0.78 0.14 60);
-  --wash-arcs: oklch(0.72 0.15 285);
-  --wash-lab: oklch(0.8 0.12 195);
-  --wash-stats: oklch(0.74 0.16 330);
-  --wash-activity: oklch(0.78 0.15 145);
-  --wash-ask: oklch(0.76 0.14 20);
-  --wash-sidequest: oklch(0.8 0.11 240);
-  --wash-finale: oklch(0.84 0.14 85);
-  --sq-light: oklch(0.86 0.04 85);
-  --sq-dark: oklch(0.52 0.06 275);
+  --wash-origin: oklch(0.7 0.17 242);
+  --wash-arcs: oklch(0.6 0.16 262);
+  --wash-lab: oklch(0.78 0.12 218);
+  --wash-stats: oklch(0.55 0.14 255);
+  --wash-activity: oklch(0.74 0.12 205);
+  --wash-ask: oklch(0.66 0.15 235);
+  --wash-sidequest: oklch(0.82 0.08 232);
+  --wash-finale: oklch(0.88 0.06 240);
+  --sq-light: oklch(0.92 0.02 245);
+  --sq-dark: oklch(0.5 0.11 252);
 }
 
 .dark {
@@ -129,47 +129,47 @@
 
 /* ---------- Light theme (same palette, inverted surfaces) ---------- */
 html.light {
-  --background: oklch(0.975 0.012 85);
-  --foreground: oklch(0.2 0.03 275);
-  --ink: oklch(0.2 0.03 275);
-  --card: oklch(0.995 0.006 85);
-  --card-foreground: oklch(0.2 0.03 275);
-  --popover: oklch(0.995 0.006 85);
-  --popover-foreground: oklch(0.2 0.03 275);
-  --primary: oklch(0.52 0.15 50);
-  --primary-foreground: oklch(0.99 0.005 85);
-  --secondary: oklch(0.94 0.015 85);
-  --secondary-foreground: oklch(0.22 0.03 275);
-  --muted: oklch(0.94 0.012 85);
-  --muted-foreground: oklch(0.45 0.03 275);
-  --accent: oklch(0.48 0.11 215);
-  --accent-foreground: oklch(0.99 0.005 85);
-  --destructive: oklch(0.55 0.21 25);
-  --destructive-foreground: oklch(0.99 0.005 85);
-  --border: oklch(0.84 0.02 85);
-  --input: oklch(0.92 0.015 85);
-  --ring: oklch(0.52 0.15 50);
-  --gold: oklch(0.52 0.15 50);
-  --gold-soft: oklch(0.62 0.13 55);
-  --grad-from: oklch(0.24 0.04 275);
-  --grad-to: oklch(0.52 0.15 50);
-  --sidebar: oklch(0.99 0.006 85);
-  --sidebar-foreground: oklch(0.2 0.03 275);
-  --sidebar-accent: oklch(0.94 0.012 85);
-  --sidebar-accent-foreground: oklch(0.22 0.03 275);
-  --sidebar-border: oklch(0.84 0.02 85);
-  --line: oklch(0.2 0.03 275);
-  --paper: oklch(0.995 0.006 85);
-  --wash-origin: oklch(0.86 0.1 65);
-  --wash-arcs: oklch(0.82 0.09 285);
-  --wash-lab: oklch(0.86 0.08 195);
-  --wash-stats: oklch(0.84 0.1 330);
-  --wash-activity: oklch(0.86 0.1 145);
-  --wash-ask: oklch(0.85 0.09 20);
-  --wash-sidequest: oklch(0.87 0.07 240);
-  --wash-finale: oklch(0.88 0.1 85);
-  --sq-light: oklch(0.93 0.03 85);
-  --sq-dark: oklch(0.62 0.07 275);
+  --background: oklch(0.985 0.003 250);
+  --foreground: oklch(0.17 0.03 252);
+  --ink: oklch(0.17 0.03 252);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.17 0.03 252);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.17 0.03 252);
+  --primary: oklch(0.52 0.19 252);
+  --primary-foreground: oklch(0.99 0.003 250);
+  --secondary: oklch(0.955 0.01 250);
+  --secondary-foreground: oklch(0.2 0.03 252);
+  --muted: oklch(0.95 0.008 250);
+  --muted-foreground: oklch(0.45 0.03 252);
+  --accent: oklch(0.5 0.14 232);
+  --accent-foreground: oklch(0.99 0.003 250);
+  --destructive: oklch(0.56 0.22 25);
+  --destructive-foreground: oklch(0.99 0.003 250);
+  --border: oklch(0.88 0.015 250);
+  --input: oklch(0.94 0.01 250);
+  --ring: oklch(0.52 0.19 252);
+  --gold: oklch(0.52 0.19 252);
+  --gold-soft: oklch(0.62 0.15 245);
+  --grad-from: oklch(0.2 0.05 252);
+  --grad-to: oklch(0.52 0.19 252);
+  --sidebar: oklch(0.99 0.003 250);
+  --sidebar-foreground: oklch(0.17 0.03 252);
+  --sidebar-accent: oklch(0.95 0.008 250);
+  --sidebar-accent-foreground: oklch(0.2 0.03 252);
+  --sidebar-border: oklch(0.88 0.015 250);
+  --line: oklch(0.17 0.03 252);
+  --paper: oklch(1 0 0);
+  --wash-origin: oklch(0.8 0.1 242);
+  --wash-arcs: oklch(0.76 0.1 262);
+  --wash-lab: oklch(0.86 0.07 218);
+  --wash-stats: oklch(0.74 0.1 255);
+  --wash-activity: oklch(0.84 0.08 205);
+  --wash-ask: oklch(0.8 0.09 235);
+  --wash-sidequest: oklch(0.9 0.05 232);
+  --wash-finale: oklch(0.92 0.04 240);
+  --sq-light: oklch(0.95 0.015 245);
+  --sq-dark: oklch(0.6 0.12 252);
 }
 
 @layer base {
@@ -371,7 +371,7 @@ html.light {
 
 /* ---------- v5 webtoon primitives ---------- */
 :root {
-  --panel-shadow: oklch(0.08 0.02 275);
+  --panel-shadow: oklch(0.05 0.02 252);
 }
 html.light {
   --panel-shadow: var(--line);
@@ -421,8 +421,8 @@ html.light {
 
 /* ---------- v5 chess ---------- */
 :root {
-  --piece-white: oklch(0.97 0.02 85);
-  --piece-black: oklch(0.18 0.03 275);
+  --piece-white: oklch(0.98 0.005 250);
+  --piece-black: oklch(0.15 0.03 252);
 }
 .chess-board {
   border: 2.5px solid var(--line);

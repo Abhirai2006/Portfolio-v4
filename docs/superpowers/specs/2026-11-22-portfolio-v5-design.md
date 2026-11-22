@@ -268,3 +268,21 @@ A builder read this design cold and asked six questions. Resolutions:
 6. **Earth & Ethos permission:** Abhishek was asked about the studio's name, screenshots and demo link
    together and said the client is okay with it. The code link is included because Abhishek already
    made that repo public himself. *(Design call; flagged for Abhishek to confirm.)*
+
+## 12. Amendment (2026-11-22, from Abhishek during the build)
+
+1. **Palette:** keep v4's navy and electric blue with white and black. Every webtoon wash, outline and board square
+   is a blue tint; red stays only for "at risk" in the Churn Lab.
+2. **The chess board is the main board**, a realistic 3D section at the top of the homepage (replaces §5.2's
+   docked side board and scripted reply lines):
+   - Abhishek (white) has opened 1.Nf3; the visitor plays black. **The piece the visitor moves decides where the
+     site goes:** ♞ knight → ML work and the Churn Lab · ♜ rook → products (Arcs, filtered) · ♝ bishop → algorithms
+     (Arcs, filtered) · ♟ pawn → skills and résumé · ♚ king → origin · ♛ queen → contact.
+   - After each visitor move, white answers (a simple engine), then the page travels to the destination.
+   - A floating "♞ Back to the board" button returns to the board; the game continues where it was (kept for the
+     browser session). Game over offers a fresh game.
+   - Hovering or focusing a piece shows its destination; a legend beside the board lists all six as plain links, so
+     every destination is reachable without playing, without JS and by keyboard.
+   - three.js loads after first paint. No-WebGL, reduced-motion and no-JS visitors get the 2D board with the same
+     rules. Page scroll is never captured: no zoom-on-scroll, and no rotate on touch screens.
+   - The Breslau 1912 finale (§5.2) stays as it is.
