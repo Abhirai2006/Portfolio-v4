@@ -1,281 +1,660 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useCallback, useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { Nav } from "@/components/portfolio/Nav";
+import { AskAbhishek } from "@/components/portfolio/AskAbhishek";
+import { GithubLive } from "@/components/portfolio/GithubLive";
+import { ProjectOrbit } from "@/components/portfolio/ProjectOrbit";
+import { ProjectModal, type Project } from "@/components/portfolio/ProjectModal";
+import { CursorGlow } from "@/components/portfolio/CursorGlow";
+import { MagicCard } from "@/components/portfolio/MagicCard";
+import { SpotlightPortrait } from "@/components/portfolio/SpotlightPortrait";
+import { WordReveal } from "@/components/motion/word-reveal";
+import { Dock, DockIcon, DockItem, DockLabel } from "@/components/motion/dock";
+import { Magnetic } from "@/components/motion/magnetic";
+import { Cursor } from "@/components/motion/cursor";
+import { hireMailto } from "@/lib/contact";
+import { PROJECTS } from "@/lib/projects";
 import { CommandPalette } from "@/components/portfolio/CommandPalette";
-import { BackToBoard, MainBoard, type Destination } from "@/components/v5/MainBoard";
-import { Finale } from "@/components/v5/Finale";
-import {
-  Arcs,
-  AskPanel,
-  Chapter,
-  LabChapter,
-  LiveActivity,
-  Origin,
-  SideQuest,
-  StatSheet,
-} from "@/components/v5/sections";
-import { Panel, SpeedLines } from "@/components/art/primitives";
-import { CHAPTERS } from "@/lib/chess/lines";
-import type { Kind } from "@/lib/projects";
-import { CONTACT_EMAIL, mailto } from "@/lib/contact";
-import { PERSON } from "@/lib/facts";
-import { MAIN_ARCS } from "@/lib/projects";
 import { track, observeSections, recordVisit } from "@/lib/analytics";
+import { Home, User, Github, FolderGit2, Sparkles, Clapperboard, Mail, ArrowRight, ArrowUpRight } from "lucide-react";
 import portrait from "@/assets/abhishek-portrait.jpg.asset.json";
 import ogCover from "@/assets/og-cover.jpg.asset.json";
 import { SITE } from "@/lib/site";
-import { homeJsonLd } from "@/lib/seo";
 
-const TITLE = "Abhishek Rai A · Aspiring ML Engineer, Mysuru";
-const DESCRIPTION =
-  "Abhishek Rai A is an aspiring machine learning engineer in Mysuru (B.E. AI & ML, GPA 9.44) looking for ML internships. Try his churn model live in the browser, then read the project episodes.";
+
+const HeroScene = lazy(() =>
+  import("@/components/portfolio/HeroScene").then((m) => ({ default: m.HeroScene })),
+);
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: TITLE },
-      { name: "description", content: DESCRIPTION },
-      { property: "og:title", content: TITLE },
-      { property: "og:description", content: DESCRIPTION },
+      { title: "Abhishek Rai A - ML Engineer · Live Projects" },
+      {
+        name: "description",
+        content:
+          "Portfolio of Abhishek Rai A, a B.E. AI & ML student and Bluemind Solutions intern. See his Customer Churn Intelligence capstone, his other projects and live GitHub activity.",
+      },
+      { property: "og:title", content: "Abhishek Rai A - ML Engineer · Live Projects" },
+      {
+        property: "og:description",
+        content:
+          "Portfolio of Abhishek Rai A, a B.E. AI & ML student and Bluemind Solutions intern. See his Customer Churn Intelligence capstone, his other projects and live GitHub activity.",
+      },
       { property: "og:type", content: "profile" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: TITLE },
-      { name: "twitter:description", content: DESCRIPTION },
       { property: "og:url", content: `${SITE}/` },
       { property: "og:image", content: `${SITE}${ogCover.url}` },
       { name: "twitter:image", content: `${SITE}${ogCover.url}` },
     ],
     links: [{ rel: "canonical", href: `${SITE}/` }],
-    scripts: homeJsonLd(SITE, portrait.url).map((block) => ({
-      type: "application/ld+json",
-      children: JSON.stringify(block),
-    })),
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Person",
+          name: "Abhishek Rai A",
+          jobTitle: "Aspiring Machine Learning Engineer",
+          url: `${SITE}/`,
+          image: `${SITE}${portrait.url}`,
+          address: { "@type": "PostalAddress", addressLocality: "Mysuru", addressRegion: "Karnataka", addressCountry: "IN" },
+          alumniOf: { "@type": "CollegeOrUniversity", name: "Mysore University School of Engineering" },
+          knowsAbout: ["Machine Learning", "Python", "Scikit-learn", "LightGBM", "XGBoost", "Data Structures and Algorithms"],
+          sameAs: [
+            "https://github.com/Abhirai2006",
+            "https://www.linkedin.com/in/abhishek-rai-a-00067238b/",
+          ],
+        }),
+      },
+    ],
   }),
   component: Index,
 });
 
-function scrollToId(id: string) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-  el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
-  // Move keyboard focus with the visitor, so the next Tab continues from the destination.
-  el.focus({ preventScroll: true });
-}
+const SECTION_IDS = ["origin", "arsenal", "github", "projects", "ask", "shelf", "contact"];
 
 function Index() {
   const [visitorCount, setVisitorCount] = useState<number | null>(null);
-  const [solved, setSolved] = useState(false);
-  const [arcsFilter, setArcsFilter] = useState<Kind | "all">("all");
 
   useEffect(() => {
     track("page_view", "home");
     void recordVisit().then(setVisitorCount);
-    return observeSections([...CHAPTERS, "contact"]);
+    return observeSections(SECTION_IDS);
   }, []);
-
-  const onTravel = useCallback((d: Destination) => {
-    if (d.chapter === "arcs") setArcsFilter(d.filter ?? "all");
-    // Let the filter render before scrolling so the page lands on the right cards.
-    window.setTimeout(() => scrollToId(d.chapter), 30);
-  }, []);
-
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <a
-        href="#arcs"
-        className="sr-only z-[70] rounded-md bg-primary px-4 py-2 font-semibold text-primary-foreground focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
-      >
-        Skip to the work
-      </a>
+    <div id="top" className="min-h-screen bg-background text-foreground">
+      <div className="film-grain" aria-hidden="true" />
+      <CursorGlow />
       <Nav />
-
-      {/* ---------- Hero + the main board ---------- */}
-      <header id="top-hero" className="relative overflow-hidden pt-24 sm:pt-28">
-        <div className="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
-          <div className="grid items-end gap-8 lg:grid-cols-[1.3fr_1fr]">
-            <div>
-              <p className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">
-                Portfolio · {PERSON.city}, India
-              </p>
-              <h1 className="mt-4 font-display text-5xl font-extrabold leading-[0.95] tracking-tight sm:text-7xl">
-                {PERSON.name}
-              </h1>
-              <p className="mt-5 max-w-xl text-lg text-muted-foreground">
-                <span className="font-semibold text-foreground">Aspiring Machine Learning Engineer</span> · looking for ML
-                internships. B.E. AI &amp; ML at Mysore University, GPA {PERSON.gpa}. His internship churn model runs live
-                on this page.
-              </p>
-            </div>
-            <div>
-              <ul className="flex flex-wrap gap-2 text-sm">
-                {["B.E. AI & ML · GPA 9.44", "Bluemind Solutions intern, 2026", `${MAIN_ARCS.length} main arcs · 1 paid client`].map(
-                  (c) => (
-                    <li key={c} className="rounded-full border-2 border-line bg-paper px-3 py-1">
-                      {c}
-                    </li>
-                  ),
-                )}
-              </ul>
-              <div className="mt-6 flex flex-wrap items-center gap-3">
-                <a
-                  href={mailto("internship")}
-                  onClick={() => track("cta_click", "hire_hero")}
-                  className="rounded-full border-2 border-line bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground shadow-[4px_4px_0_var(--panel-shadow)] transition hover:-translate-y-0.5"
-                >
-                  Hire me for an internship →
-                </a>
-                <Link
-                  to="/resume"
-                  onClick={() => track("cta_click", "resume")}
-                  className="rounded-full border-2 border-line bg-paper px-5 py-2.5 text-sm font-semibold transition hover:-translate-y-0.5"
-                >
-                  Résumé
-                </Link>
-                <a
-                  href="#arcs"
-                  onClick={() => track("cta_click", "skip_to_work")}
-                  className="font-mono text-sm font-bold uppercase tracking-widest text-primary underline-offset-4 hover:underline"
-                >
-                  Skip to the work →
-                </a>
-              </div>
-              <p className="mt-4 font-mono text-xs text-muted-foreground" aria-live="polite">
-                {visitorCount === null ? "" : `${visitorCount.toLocaleString()} visitors so far`}
-              </p>
-            </div>
-          </div>
-          <div className="mt-12">
-            <MainBoard onTravel={onTravel} />
-          </div>
-        </div>
-      </header>
-
-      <main>
-        <Chapter id="origin" n={1} move="♚">
-          <Origin />
-        </Chapter>
-        <Chapter id="arcs" n={2} move="♜ ♝">
-          <Arcs filter={arcsFilter} onFilter={setArcsFilter} />
-        </Chapter>
-        <Chapter id="lab" n={3} move="♞">
-          <LabChapter />
-        </Chapter>
-        <Chapter id="stats" n={4} move="♟">
-          <StatSheet />
-        </Chapter>
-        <Chapter id="activity" n={5}>
-          <LiveActivity />
-        </Chapter>
-        <Chapter id="ask" n={6}>
-          <AskPanel />
-        </Chapter>
-        <Chapter id="sidequest" n={7}>
-          <SideQuest />
-        </Chapter>
-        <Chapter id="finale" n={8}>
-          <Finale
-            onSolved={() => {
-              setSolved(true);
-              track("cta_click", "finale_solved");
-            }}
-          />
-          <Contact solved={solved} />
-        </Chapter>
-      </main>
-
-      <footer className="border-t-2 border-line">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-8 font-mono text-xs text-muted-foreground sm:px-6">
-          <div>
-            © {new Date().getFullYear()} · {PERSON.name} · Portfolio v5, "The Réti Volume"
-          </div>
-          <div>Drawn in code · three.js board · his LightGBM model, in your browser</div>
-        </div>
-      </footer>
-
-      <BackToBoard />
+      <Hero visitorCount={visitorCount} />
+      <Origin />
+      <NowBuilding />
+      <Arsenal />
+      <GithubSection />
+      <Projects />
+      <AskSection />
+      <AnimeShelf />
+      <Contact />
+      <Footer />
+      <FloatingDock />
       <CommandPalette />
     </div>
   );
 }
 
-function Contact({ solved }: { solved: boolean }) {
-  const [revealed, setRevealed] = useState(false);
-  const [copied, setCopied] = useState(false);
+
+/* ---------- FLOATING DOCK ---------- */
+function FloatingDock() {
+  const items = [
+    { title: "Top", icon: <Home className="h-5 w-5" />, href: "#top" },
+    { title: "Origin", icon: <User className="h-5 w-5" />, href: "#origin" },
+    { title: "GitHub", icon: <Github className="h-5 w-5" />, href: "#github" },
+    { title: "Arsenal", icon: <FolderGit2 className="h-5 w-5" />, href: "#projects" },
+    { title: "Ask", icon: <Sparkles className="h-5 w-5" />, href: "#ask" },
+    { title: "Anime", icon: <Clapperboard className="h-5 w-5" />, href: "#shelf" },
+    { title: "Contact", icon: <Mail className="h-5 w-5" />, href: "#contact" },
+  ];
   return (
-    <section id="contact" tabIndex={-1} aria-labelledby="contact-title" className="mt-10 scroll-mt-24 focus:outline-none">
-      <Panel chapter="finale" tone="wash" className="relative p-6 sm:p-10">
-        {solved && <SpeedLines className="opacity-20" />}
-        <div className="relative grid gap-8 md:grid-cols-[1.2fr_1fr] md:items-center">
-          <div>
-            <p className="font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">
-              {solved ? "You found it." : "Checkmate or not,"}
+    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 hidden md:block">
+      <Dock magnification={64} distance={140} panelHeight={64}>
+        {items.map((it) => (
+          <DockItem key={it.title} href={it.href} label={it.title}>
+            <DockLabel>{it.title}</DockLabel>
+            <DockIcon>{it.icon}</DockIcon>
+          </DockItem>
+        ))}
+      </Dock>
+    </div>
+  );
+}
+
+/* ---------- HERO ---------- */
+function Hero({ visitorCount }: { visitorCount: number | null }) {
+  return (
+    <section className="relative min-h-screen flex items-center overflow-hidden">
+      <div className="absolute inset-0 z-0 light:opacity-25">
+        <Suspense fallback={null}>
+          <HeroScene />
+        </Suspense>
+        <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/10 to-background pointer-events-none" />
+      </div>
+
+      <div className="relative z-10 mx-auto max-w-7xl w-full px-6 pt-32 pb-20 grid lg:grid-cols-[1.4fr_1fr] gap-10 items-center">
+        <div className="max-w-4xl">
+          <div className="flex items-center gap-3 text-xs font-mono uppercase tracking-[0.3em] text-muted-foreground">
+            <span className="h-px w-8 bg-primary" />
+            Chapter 00 · Portfolio / 2026
+          </div>
+          <h1 className="mt-6 font-display text-5xl sm:text-7xl lg:text-8xl font-semibold leading-[0.95] tracking-tight">
+            <span className="block">ABHISHEK</span>
+             <span className="block gold-text">RAI A</span>
+          </h1>
+          <p className="mt-6 max-w-xl text-lg text-muted-foreground leading-relaxed">
+             Aspiring{" "}
+             <span className="text-foreground font-medium">Machine Learning Engineer</span>. B.E. AI &amp; ML at
+             Mysore University · <span className="text-primary font-mono">GPA 9.44/10</span> · recently shipped a
+             production-ready Customer Churn Intelligence System with LightGBM and Streamlit.
+          </p>
+
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Magnetic intensity={0.25} range={140}>
+              <a
+                href="#ask"
+                className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-primary text-primary-foreground px-5 py-2.5 text-sm font-semibold transition"
+              >
+                <span className="absolute inset-0 -translate-x-full bg-accent transition-transform duration-300 group-hover:translate-x-0" aria-hidden="true" />
+                 <span className="relative flex items-center gap-2 group-hover:text-accent-foreground transition-colors">
+                   Ask Abhishek <span className="transition-transform duration-300 group-hover:translate-y-0.5">↴</span>
+                </span>
+              </a>
+            </Magnetic>
+            <Magnetic intensity={0.25} range={140}>
+              <a
+                href={hireMailto}
+                onClick={() => track("cta_click", "hire_hero")}
+                aria-label="Email Abhishek about a role"
+                className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full border border-border px-5 py-2.5 text-sm font-medium hover:border-primary transition"
+              >
+                <span className="absolute inset-0 -translate-x-full bg-primary transition-transform duration-300 group-hover:translate-x-0" aria-hidden="true" />
+                <span className="relative flex items-center gap-2 group-hover:text-primary-foreground transition-colors">
+                  Hire me <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
+                </span>
+              </a>
+            </Magnetic>
+            <Magnetic intensity={0.2} range={140}>
+              <Link
+                to="/resume"
+                onClick={() => track("cta_click", "resume")}
+                className="group inline-flex items-center gap-2 rounded-full border border-border px-5 py-2.5 text-sm font-medium hover:border-primary hover:text-primary transition"
+              >
+                Résumé <span className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5">→</span>
+              </Link>
+            </Magnetic>
+            <Magnetic intensity={0.2} range={140}>
+              <a
+                href="https://github.com/Abhirai2006"
+                target="_blank"
+                rel="noreferrer"
+                className="group inline-flex items-center gap-2 rounded-full border border-border px-5 py-2.5 text-sm font-medium hover:border-primary hover:text-primary transition"
+              >
+                GitHub <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
+              </a>
+            </Magnetic>
+          </div>
+
+          <dl className="mt-12 grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-2xl">
+            <Kpi k="9.44" sub="Avg GPA / 10" />
+             <Kpi k="V" sub="Semester" />
+            <Kpi k={String(PROJECTS.length)} sub="Projects shipped" />
+            <VisitorKpi value={visitorCount} />
+          </dl>
+        </div>
+        <div className="hidden lg:flex justify-center">
+          <div className="relative">
+            <div className="absolute -inset-4 rounded-[2rem] bg-gradient-to-br from-primary/40 via-accent/20 to-destructive/30 blur-2xl opacity-60" />
+            <div className="relative">
+              <SpotlightPortrait src={portrait.url} alt="Abhishek Rai A" />
+            </div>
+            <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 rounded-full border border-border bg-background/90 backdrop-blur px-4 py-1.5 text-[10px] font-mono uppercase tracking-widest text-muted-foreground whitespace-nowrap">
+              <span className="text-primary">●</span> abhishek · mysuru
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-xs font-mono uppercase tracking-widest text-muted-foreground animate-bounce">
+        scroll ↓
+      </div>
+    </section>
+  );
+}
+
+function Kpi({ k, sub }: { k: string; sub: string }) {
+  return (
+    <div>
+      <div className="text-3xl font-display gold-text">{k}</div>
+      <div className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground mt-1">
+        {sub}
+      </div>
+    </div>
+  );
+}
+
+function VisitorKpi({ value }: { value: number | null }) {
+  return (
+    <div aria-live="polite">
+      <div className="text-3xl font-display gold-text tabular-nums">
+        {value === null ? "..." : value.toLocaleString()}
+      </div>
+      <div className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground mt-1">
+        total visitors
+      </div>
+    </div>
+  );
+}
+
+/* ---------- MARQUEE ---------- */
+function Marquee({ words }: { words: string[] }) {
+  const line = words.join("  ★  ");
+  return (
+    <div className="overflow-hidden border-y border-border bg-muted/30 py-4">
+      <div className="whitespace-nowrap marquee flex">
+        <span className="font-chapter text-2xl tracking-widest px-6">{line}</span>
+        <span className="font-chapter text-2xl tracking-widest px-6">{line}</span>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- ORIGIN ---------- */
+function Origin() {
+  return (
+    <>
+      <Marquee
+        words={[
+          "ML ENGINEER",
+          "PROBLEM SOLVER",
+          "ANIME FAN",
+          "DSA NERD",
+          "TULU · KANNADA · HINDI · ENGLISH",
+        ]}
+      />
+      <section id="origin" className="mx-auto max-w-6xl px-6 py-28">
+        <ChapterHeader n="01" title="Origin Story" />
+        <div className="mt-10 grid md:grid-cols-[1fr_1.4fr] gap-12">
+          <blockquote className="relative border-l-2 border-primary pl-6 font-display text-2xl leading-snug">
+            "Building cool stuff, <span className="gold-text">one algorithm at a time.</span>"
+          </blockquote>
+          <div className="space-y-4 text-muted-foreground leading-relaxed">
+            <p>
+               <span className="text-foreground font-semibold">Abhishek Rai A</span>, a
+               <span className="text-foreground"> B.E. AI &amp; ML</span> student at
+               <span className="text-foreground"> Mysore University School of Engineering</span>, in my
+               fifth semester with a <span className="text-primary font-mono">9.44/10</span> average GPA. Originally from
+               Mangalore, now in Mysuru.
             </p>
-            <h2 id="contact-title" className="mt-2 font-display text-4xl font-extrabold sm:text-5xl">
-              Now let's talk.
-            </h2>
-            <p className="mt-4 max-w-lg text-muted-foreground">
-              Looking for ML internships. An algorithm to crack, a model to ship, or the latest anime arc: drop a line.
+            <p>
+               I find patterns in mathematics and elegance in algorithms. I speak Tulu (mother tongue), Kannada, Hindi
+               and English. I recently finished a 4-week, roughly 120-hour Core AI &amp; ML internship at
+               Bluemind Solutions Pvt. Ltd. (Aug to Sep 2026). My capstone there was a leak-free Customer Churn
+               Intelligence System on IBM Telco data.
+            </p>
+             <p className="text-sm">
+               I compared Logistic Regression, Random Forest, XGBoost and LightGBM, tuned the decision threshold for
+               business cost, added SHAP-style analysis, and shipped a live Streamlit dashboard. LightGBM reached
+               <span className="text-primary font-mono"> 0.849 CV ROC-AUC</span> and <span className="text-primary font-mono">82% recall</span> on churners, with an estimated
+               <span className="text-primary font-mono"> ~$179k</span> in annual recoverable revenue. One Piece bias included.
+            </p>
+            <div className="pt-2 flex flex-wrap gap-2 text-[11px] font-mono uppercase tracking-widest">
+              <Chip>Mysuru, Karnataka</Chip>
+              <Chip>B.E. AI &amp; ML</Chip>
+              <Chip>DRISHTI CPS · IIT Indore</Chip>
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}
+
+function Chip({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="rounded-full border border-border px-3 py-1 text-muted-foreground">{children}</span>
+  );
+}
+
+function ChapterHeader({ n, title }: { n: string; title: string }) {
+  return (
+    <div className="flex items-baseline gap-6">
+      <span className="font-chapter text-7xl gold-text leading-none">{n}</span>
+      <div>
+        <div className="text-xs font-mono uppercase tracking-[0.3em] text-muted-foreground">Chapter</div>
+        <WordReveal text={title} className="font-display text-4xl sm:text-5xl font-semibold" />
+      </div>
+    </div>
+  );
+}
+
+/* ---------- NOW BUILDING ---------- */
+function NowBuilding() {
+  return (
+    <section className="mx-auto max-w-6xl px-6 pb-28">
+      <div className="grid md:grid-cols-3 gap-4">
+        <StatusCard tag="Recently shipped" title="Churn Intelligence" body="Bluemind Solutions capstone: leak-free tabular ML, business threshold tuning, and a live Streamlit dashboard on IBM Telco data." />
+        <StatusCard tag="Learning" title="AI & Data Science" body="Ongoing certification through DRISHTI CPS (IIT Indore): ML fundamentals, workflows and applied AI." />
+        <StatusCard tag="Building foundations" title="PyTorch · FastAPI" body="Learning the next layer of ML engineering on purpose: model serving and deep learning fundamentals. I'm not claiming production experience yet." />
+      </div>
+    </section>
+  );
+}
+function StatusCard({ tag, title, body }: { tag: string; title: string; body: string }) {
+  return (
+    <MagicCard className="border border-border bg-card/50 backdrop-blur p-5 hover:border-primary/60 transition-colors">
+      <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-primary">
+        <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" /> {tag}
+      </div>
+      <div className="mt-3 font-display text-xl">{title}</div>
+      <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{body}</p>
+    </MagicCard>
+  );
+}
+
+/* ---------- ARSENAL ---------- */
+function Arsenal() {
+  const tiers = [
+    { tier: "S", label: "Proficient", items: ["Python", "NumPy", "Pandas", "Scikit-learn (Pipelines, ColumnTransformer, CV)", "Git", "Linear Algebra", "Calculus"] },
+    { tier: "A", label: "Intermediate", items: ["XGBoost", "LightGBM", "Matplotlib / Seaborn", "Streamlit", "SQL", "DSA", "Probability & Statistics"] },
+    { tier: "B", label: "Learning / Basics", items: ["PyTorch", "FastAPI", "Discrete Mathematics"] },
+  ];
+  return (
+    <section id="arsenal" className="mx-auto max-w-6xl px-6 py-28">
+      <ChapterHeader n="02" title="Power Levels" />
+      <p className="mt-6 max-w-2xl text-muted-foreground">
+        The tools I lean on most are AI/ML and the math behind it. For web stuff (HTML/CSS/JS/React) I vibe-code with
+        AI as a copilot, and my real focus stays on the algorithms.
+      </p>
+      <div className="mt-10 space-y-4">
+        {tiers.map((t) => (
+          <div
+            key={t.tier}
+            className="grid grid-cols-[80px_1fr] items-center border border-border rounded-xl overflow-hidden bg-card/40"
+          >
+            <div className="bg-primary text-primary-foreground py-6 text-center">
+              <div className="font-chapter text-4xl leading-none">{t.tier}</div>
+              <div className="text-[9px] font-mono uppercase tracking-widest mt-1">TIER</div>
+            </div>
+            <div className="px-5 py-4">
+              <div className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">{t.label}</div>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {t.items.map((i) => (
+                  <span
+                    key={i}
+                    className="rounded-md bg-secondary border border-border px-3 py-1 text-sm font-mono"
+                  >
+                    {i}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/* ---------- GITHUB ---------- */
+function GithubSection() {
+  return (
+    <section id="github" className="mx-auto max-w-6xl px-6 py-28">
+      <ChapterHeader n="03" title="Live Code Activity" />
+      <p className="mt-6 max-w-2xl text-muted-foreground">
+        Not hardcoded. This is pulled live from the GitHub API every 10 minutes, so it's what I actually shipped.
+      </p>
+      <div className="mt-10">
+        <GithubLive />
+      </div>
+    </section>
+  );
+}
+
+/* ---------- PROJECTS ---------- */
+function Projects() {
+  const items = PROJECTS;
+  const [active, setActive] = useState<Project | null>(null);
+  const [hoveringCard, setHoveringCard] = useState(false);
+  return (
+    // overflow-x-clip: the ring's side cards swing past the screen edge on phones and tablets.
+    // `clip` (unlike `hidden`) keeps vertical overflow and doesn't create a scroll container.
+    <section id="projects" className="mx-auto max-w-6xl overflow-x-clip px-6 py-28">
+      <ChapterHeader n="04" title="The Arsenal" />
+      <p className="mt-6 max-w-2xl text-muted-foreground">
+        Click any card for screenshots and the live site, or open the full case study for the problem,
+        constraints, trade-offs and what actually shipped.
+      </p>
+      <ProjectOrbit
+        projects={items}
+        onHoverCard={setHoveringCard}
+        onOpen={(p) => {
+          track("cta_click", `open_case_${p.title}`);
+          setActive(p);
+        }}
+      />
+      {active && <ProjectModal project={active} onClose={() => setActive(null)} />}
+      <Cursor visible={hoveringCard && !active}>
+        <div className="hidden items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 font-mono text-xs uppercase tracking-widest text-primary-foreground shadow-lg md:flex">
+          <span className="h-1.5 w-1.5 rounded-full bg-primary-foreground animate-pulse" />
+          Open
+        </div>
+      </Cursor>
+    </section>
+  );
+}
+
+/* ---------- ASK AI ---------- */
+function AskSection() {
+  return (
+    <section id="ask" className="mx-auto max-w-6xl px-6 py-28">
+      <ChapterHeader n="05" title="Ask Abhishek" />
+      <p className="mt-6 max-w-2xl text-muted-foreground">
+        In a hurry? Skip the scroll and ask the assistant instead. It only knows my resume and projects. Answers stay grounded
+        in my actual background.
+      </p>
+      <div className="mt-10 max-w-3xl mx-auto">
+        <AskAbhishek />
+      </div>
+    </section>
+  );
+}
+
+/* ---------- ANIME ---------- */
+function AnimeShelf() {
+  return (
+    <section id="shelf" className="mx-auto max-w-6xl px-6 py-28">
+      <ChapterHeader n="06" title="Side Quest" />
+      <Link
+        to="/anime"
+        onClick={() => track("cta_click", "anime_atlas")}
+        className="group mt-10 block overflow-hidden rounded-xl border border-border bg-card/50 p-6 transition-colors hover:border-primary sm:p-10"
+      >
+        <div className="flex flex-col gap-8 sm:flex-row sm:items-end sm:justify-between">
+          <div className="max-w-3xl">
+            <p className="font-mono text-xs uppercase tracking-widest text-primary">Anime</p>
+            <h2 className="mt-4 font-one-piece text-4xl leading-tight text-foreground sm:text-6xl">Abhi's Anime Shelf</h2>
+            <p className="mt-5 text-lg leading-relaxed text-muted-foreground">
+              Every anime I've finished, shelved in 3D. Scroll through 60 titles, ask the shelf for a pick by mood, or leave me a recommendation for what to watch next.
             </p>
           </div>
-          <div className="space-y-3">
-            <a
-              href={mailto("internship")}
-              onClick={() => track("cta_click", "hire_contact")}
-              className="block rounded-xl border-2 border-line bg-primary px-5 py-3 text-center font-bold text-primary-foreground shadow-[4px_4px_0_var(--panel-shadow)]"
+          <span className="inline-flex shrink-0 items-center gap-2 font-mono text-sm uppercase tracking-widest text-primary">
+            Open the shelf <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
+          </span>
+        </div>
+      </Link>
+    </section>
+  );
+}
+
+/* ---------- CONTACT ---------- */
+function Contact() {
+  const [revealed, setRevealed] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const parallax = useRef<HTMLElement>(null);
+  const [offset, setOffset] = useState(0);
+  useEffect(() => {
+    const onScroll = () => {
+      const el = parallax.current;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      const progress = 1 - r.top / window.innerHeight;
+      setOffset(Math.max(-1, Math.min(1, progress)) * 60);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  // Split + reversed encoding so raw source doesn't contain the strings verbatim.
+  const decode = (parts: string[]) => parts.map((p) => p.split("").reverse().join("")).join("");
+  const email = decode(["iarihba", "mg@6002", "moc.lia"]);
+  const phone = decode(["69 19+", "110 860", "54"]);
+  return (
+    <section ref={parallax} id="contact" className="relative overflow-hidden mx-auto max-w-6xl px-6 py-28">
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
+        <div
+          className="absolute -left-24 top-10 h-72 w-72 rounded-full bg-primary/20 blur-3xl"
+          style={{ transform: `translate3d(0, ${offset * -0.6}px, 0)` }}
+        />
+        <div
+          className="absolute right-0 bottom-0 h-80 w-80 rounded-full bg-accent/15 blur-3xl"
+          style={{ transform: `translate3d(0, ${offset * 0.8}px, 0)` }}
+        />
+        <div
+          className="absolute left-1/2 top-1/3 h-56 w-56 rounded-full bg-destructive/10 blur-3xl"
+          style={{ transform: `translate3d(0, ${offset * -0.3}px, 0)` }}
+        />
+      </div>
+      <ChapterHeader n="07" title="Let's Build Something" />
+      <div className="mt-10 grid md:grid-cols-2 gap-8 items-center">
+        <div className="rounded-2xl border border-border bg-card font-mono text-sm p-6 space-y-1 shadow-2xl">
+          <div className="flex gap-1.5 mb-3">
+            <span className="h-3 w-3 rounded-full bg-destructive" />
+            <span className="h-3 w-3 rounded-full bg-primary" />
+            <span className="h-3 w-3 rounded-full bg-muted-foreground" />
+          </div>
+          <div><span className="text-primary">$</span> whoami</div>
+          <div className="text-muted-foreground pl-2">abhishek@rai:~$ aspiring_ml_engineer</div>
+          <div>
+            <span className="text-primary">$</span>{" "}
+            <button
+              onClick={() => setRevealed(true)}
+              className="text-foreground hover:text-primary underline-offset-4 hover:underline"
             >
-              Email about an internship →
-            </a>
-            {revealed ? (
-              <div className="flex items-center justify-between gap-2 rounded-xl border-2 border-line bg-paper px-4 py-3 font-mono text-sm">
-                <a href={`mailto:${CONTACT_EMAIL}`} className="truncate hover:underline">
-                  {CONTACT_EMAIL}
+              cat contact.sh
+            </button>
+          </div>
+          {revealed ? (
+            <>
+              <div className="text-muted-foreground pl-2 flex items-center gap-2 flex-wrap">
+                →{" "}
+                <a href={`mailto:${email}`} className="text-primary hover:underline">
+                  {email}
                 </a>
                 <button
                   type="button"
+                  aria-label="Copy email address"
                   onClick={async () => {
                     try {
-                      await navigator.clipboard.writeText(CONTACT_EMAIL);
+                      await navigator.clipboard.writeText(email);
                       setCopied(true);
-                      window.setTimeout(() => setCopied(false), 2000);
+                      setTimeout(() => setCopied(false), 2000);
                     } catch {
                       /* clipboard unavailable */
                     }
                   }}
-                  className="shrink-0 rounded border-2 border-line px-2 py-0.5 text-[11px] uppercase"
+                  className={`rounded border px-1.5 py-0.5 text-[10px] uppercase tracking-wider transition-colors ${
+                    copied
+                      ? "border-primary text-primary"
+                      : "border-border text-muted-foreground hover:border-primary hover:text-primary"
+                  }`}
                 >
                   {copied ? "copied ✓" : "copy"}
                 </button>
               </div>
+              <div className="text-muted-foreground pl-2">
+                →{" "}
+                <a href={`tel:${phone.replace(/\s/g, "")}`} className="text-primary hover:underline">
+                  {phone}
+                </a>
+              </div>
+            </>
+          ) : (
+            <div className="text-muted-foreground pl-2 italic">
+              [ contact locked: click <span className="text-primary">cat contact.sh</span> to decrypt ]
+            </div>
+          )}
+          <div><span className="text-primary">$</span> ./transmit.sh</div>
+          <div className="text-muted-foreground pl-2 animate-pulse">▍</div>
+        </div>
+        <div className="space-y-4">
+          <p className="text-lg text-muted-foreground">
+            An algorithm to crack, a theorem to prove, or the latest anime arc. Drop a line.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            {revealed ? (
+              <a
+                href={`mailto:${email}`}
+                onClick={() => track("cta_click", "email_contact")}
+                className="rounded-full bg-primary text-primary-foreground px-5 py-2.5 text-sm font-semibold hover:opacity-90"
+              >
+                {email}
+              </a>
             ) : (
               <button
                 type="button"
                 onClick={() => setRevealed(true)}
-                className="w-full rounded-xl border-2 border-line bg-paper px-4 py-3 text-sm font-semibold"
+                className="rounded-full bg-primary text-primary-foreground px-5 py-2.5 text-sm font-semibold hover:opacity-90"
               >
                 Reveal email
               </button>
             )}
-            <div className="flex flex-wrap gap-2">
-              {[
-                ["GitHub", PERSON.github],
-                ["LinkedIn", PERSON.linkedin],
-                ["Instagram", PERSON.instagram],
-              ].map(([label, href]) => (
-                <a
-                  key={label}
-                  href={href}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="rounded-full border-2 border-line bg-paper px-4 py-1.5 text-sm font-semibold hover:-translate-y-0.5"
-                >
-                  {label}
-                </a>
-              ))}
-            </div>
+            <a
+              href="https://github.com/Abhirai2006"
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-full border border-border px-5 py-2.5 text-sm hover:border-primary hover:text-primary"
+            >
+              GitHub
+            </a>
+            <a
+              href="https://www.linkedin.com/in/abhishek-rai-a-00067238b/"
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-full border border-border px-5 py-2.5 text-sm hover:border-primary hover:text-primary"
+            >
+              LinkedIn
+            </a>
+            <a
+              href="https://instagram.com/_abhishek.rai.a_"
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-full border border-border px-5 py-2.5 text-sm hover:border-primary hover:text-primary"
+            >
+              Instagram
+            </a>
           </div>
         </div>
-      </Panel>
+      </div>
     </section>
+  );
+}
+
+function Footer() {
+  return (
+    <footer className="border-t border-border">
+      <div className="mx-auto max-w-7xl px-6 py-10 flex flex-wrap items-center justify-between gap-4 text-xs font-mono text-muted-foreground">
+        <div>© {new Date().getFullYear()} · Abhishek Rai A · Portfolio v4</div>
+        <div>Built with TanStack Start · Three.js</div>
+      </div>
+    </footer>
   );
 }

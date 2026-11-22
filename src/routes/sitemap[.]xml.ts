@@ -8,7 +8,6 @@ const PAGES: { path: string; priority: string }[] = [
   { path: "/resume", priority: "0.9" },
   { path: "/anime", priority: "0.7" },
   { path: "/reviews", priority: "0.6" },
-  { path: "/llms.txt", priority: "0.5" },
   ...PROJECTS.map((p, i) => ({ path: `/projects/${p.slug}`, priority: i === 0 ? "0.9" : "0.8" })),
 ];
 
